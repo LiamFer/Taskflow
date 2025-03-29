@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from 'typeorm';
+import { Board } from './board.entity';
 
 @Entity()
 export class User {
@@ -13,4 +14,12 @@ export class User {
 
   @Column()
   password: string;
+
+  // Boards que o usuário criou
+  @OneToMany(() => Board, (board) => board.owner)
+  ownedBoards: Board[];
+
+  // Boards em que o usuário é membro
+  @ManyToMany(() => Board, (board) => board.members)
+  boards: Board[];
 }

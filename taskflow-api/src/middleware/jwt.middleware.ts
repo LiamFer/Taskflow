@@ -24,7 +24,6 @@ export class JWTMiddleware implements NestMiddleware {
       if (diffInHours <= 2) {
         const payload = {id:validateToken.id,email:validateToken.email}
         const newToken = this.authService.generateToken(payload)
-        console.log(`novo cookie gerado ${newToken}`)
         res.cookie("jwt", newToken)
       }
 
