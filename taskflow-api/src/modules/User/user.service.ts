@@ -2,9 +2,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/database/entities/user.entity';
+import { user } from 'src/interfaces/userInterface';
 import { Repository } from 'typeorm';
 import { AuthService } from '../Auth/auth.service';
-import { user } from 'src/interfaces/userInterface';
+import { z } from 'zod';
+
+export interface validationResponse {
+  state: boolean;
+  reason: string;
+}
 
 @Injectable()
 export class UserService {
@@ -13,18 +19,14 @@ export class UserService {
     private authService: AuthService,
   ) {}
 
-  async createUser(
-    name: string,
-    email: string,
-    password: string,
-  ): Promise<User> {
-    const hashedPassword = await this.authService.hashPassword(password);
-    const user = this.userRepository.create({
-      name,
-      email,
+  async createUser(user: user): Promise<User> {
+    const hashedPassword = await this.authService.hashPassword(user.password);
+    const newUser = this.userRepository.create({
+      name: user.name,
+      email: user.email,
       password: hashedPassword,
     });
-    return await this.userRepository.save(user);
+    return await this.userRepository.save(newUser);
   }
 
   async getUsers(): Promise<User[]> {
@@ -35,13 +37,40 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  async authenticateUser(email: string, password: string): Promise<boolean> {
-    const user: user | null = await this.findByEmail(email);
+  async authenticateUser(user: user): Promise<boolean> {
+    const queryUser: user | null = await this.findByEmail(user.email);
 
-    if (!user) {
+    if (!queryUser) {
       return false;
     } else {
-      return await this.authService.comparePassword(password, user.password);
+      return await this.authService.comparePassword(
+        user.password,
+        queryUser.password,
+      );
+    }
+  }
+
+  async validateRegister(user: user): Promise<validationResponse> {
+    // Verificando se o email já está sendo utilizado
+    if (await this.findByEmail(user.email)) return { state: false, reason: 'Email já está sendo utilizado' }
+
+    // Usando Zod pra verificar se todos os campos estão de acordo com as validações
+    const userSchema = z.object({
+      name: z
+        .string()
+        .min(3, { message: 'Nome tem que ter ao menos 3 caracteres' }),
+      email: z.string().email({ message: 'Email inválido' }),
+      password: z
+        .string()
+        .min(6, { message: 'Senha tem que ter ao menos 6 caracteres' }),
+    });
+
+    try {
+      userSchema.parse(user); // Valida o usuário
+      return { state: true, reason: 'Usuário Válido' };
+    } catch (e) {
+      // Retornando o primeiro campo que não é válido
+      return { state: false, reason: e.errors[0].message };
     }
   }
 }

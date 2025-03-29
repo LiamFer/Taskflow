@@ -7,10 +7,11 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService, validationResponse } from './user.service';
 import { Response } from 'express';
 import { ResponseUtil } from 'src/utils/response';
 import { AuthService } from '../Auth/auth.service';
+import { user } from 'src/interfaces/userInterface';
 
 // USER ROUTE
 @Controller('user')
@@ -21,26 +22,37 @@ export class UserController {
   ) {}
 
   @Post('register')
-  Register(@Body() body: any, @Res() res: Response): object {
+  async Register(@Body() body: user, @Res() res: Response): Promise<object> {
+    // Verificando se o Usuário recebido cumpre os requisitos
+    const userValidation : validationResponse = await this.userService.validateRegister(body);
+    if (!userValidation.state) {
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.BAD_REQUEST,
+        userValidation.reason,
+      );
+    }
+
+    // Criando o Usuário no Banco
     try {
-      console.log(body);
-      this.userService.createUser(body.name, body.email, body.password);
+      await this.userService.createUser(body);
       return ResponseUtil.sendResponse(
         res,
         HttpStatus.CREATED,
         'User Created Successfully!',
       );
     } catch (error) {
-      return { statusCode: HttpStatus.BAD_REQUEST, message: error.message };
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Internal Server Error",
+      );
     }
   }
 
   @Post('login')
-  async Login(@Body() body: any, @Res() res: Response): Promise<object> {
-    const authUser = await this.userService.authenticateUser(
-      body.email,
-      body.password,
-    );
+  async Login(@Body() body: user, @Res() res: Response): Promise<object> {
+    const authUser = await this.userService.authenticateUser(body);
 
     if (authUser) {
       // Gerando o JWT
@@ -48,28 +60,27 @@ export class UserController {
 
       // Definindo as opções do cookie
       const cookieOptions = {
-        name: 'jwt', 
+        name: 'jwt',
         value: jwtToken,
         options: {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production', 
-          maxAge: 3600000, // 1 hora de expiração
+          secure: process.env.NODE_ENV === 'production',
         },
       };
 
       return ResponseUtil.sendResponse(
         res,
-        HttpStatus.ACCEPTED,
+        HttpStatus.OK,
         'User Logged!',
-        null, 
-        null, 
+        null,
+        null,
         cookieOptions,
       );
     } else {
       return ResponseUtil.sendResponse(
         res,
-        HttpStatus.NOT_FOUND,
-        'User not Found!',
+        HttpStatus.UNAUTHORIZED,
+        'Usuário não existe',
       );
     }
   }

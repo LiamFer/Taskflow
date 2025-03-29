@@ -1,4 +1,3 @@
-// src/auth.service.ts
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
