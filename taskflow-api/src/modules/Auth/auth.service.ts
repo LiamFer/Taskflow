@@ -8,7 +8,7 @@ export class AuthService {
 
   // Funções do JWT
   generateToken(payload: object): string {
-    return jwt.sign(payload, this.secret, { expiresIn: '1h' });
+    return jwt.sign(payload, this.secret, { expiresIn: '16h' });
   }
 
   verifyToken(token: string): any {

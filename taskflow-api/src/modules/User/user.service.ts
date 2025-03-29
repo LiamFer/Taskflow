@@ -37,16 +37,17 @@ export class UserService {
     return this.userRepository.findOneBy({ email });
   }
 
-  async authenticateUser(user: user): Promise<boolean> {
+  async authenticateUser(user: user): Promise<user | null> {
     const queryUser: user | null = await this.findByEmail(user.email);
 
     if (!queryUser) {
-      return false;
+      return null;
     } else {
-      return await this.authService.comparePassword(
+      const authentication = await this.authService.comparePassword(
         user.password,
         queryUser.password,
       );
+      return authentication ? queryUser : null
     }
   }
 

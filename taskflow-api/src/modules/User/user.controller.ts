@@ -52,11 +52,11 @@ export class UserController {
 
   @Post('login')
   async Login(@Body() body: user, @Res() res: Response): Promise<object> {
-    const authUser = await this.userService.authenticateUser(body);
-
+    const authUser : user | null = await this.userService.authenticateUser(body);
     if (authUser) {
       // Gerando o JWT
-      const jwtToken = this.authService.generateToken(body);
+      const payload = {id:authUser.id, email:authUser.email}
+      const jwtToken = this.authService.generateToken(payload);
 
       // Definindo as opções do cookie
       const cookieOptions = {
