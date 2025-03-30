@@ -8,6 +8,9 @@ import {
   Res,
   Req,
   UseGuards,
+  Param,
+  Put,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { BoardService, validationResponse } from './board.service';
 import { Response, Request } from 'express';
@@ -32,13 +35,17 @@ export class BoardController {
   ) {}
 
   @Post()
-  async newBoard(@Body() body: board, @Res() res: Response,@Req() req: Request): Promise<object> {
+  async newBoard(
+    @Body() body: board,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
     // Criando o Board no Banco
     try {
-      // Verificando o Token pra pegar o Usuário que está criando o Board
-      const token = this.authService.verifyToken(req.cookies.jwt)
-      const {title,description} = body
-      const board = {title:title,description:description,owner:token}
+      // Pegando o Usuário que está criando o Board
+      const token = this.authService.verifyToken(req.cookies.jwt);
+      const { title, description } = body;
+      const board = { title: title, description: description, owner: token };
 
       await this.boardService.createBoard(board);
       return ResponseUtil.sendResponse(
@@ -50,10 +57,73 @@ export class BoardController {
       return ResponseUtil.sendResponse(
         res,
         HttpStatus.INTERNAL_SERVER_ERROR,
-        "Internal Server Error",
+        'Internal Server Error',
       );
     }
   }
 
+  @Get()
+  async getBoards(@Res() res: Response, @Req() req: Request): Promise<object> {
+    try {
+      // Pegando o Usuário que está requisitando os Boards
+      const token = this.authService.verifyToken(req.cookies.jwt);
+      const boards = await this.boardService.getBoards(token.id);
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.CREATED,
+        'Data Retrieved Successfully!',
+        boards,
+      );
+    } catch (error) {
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
+  }
 
+  @Put(':id')
+  async updateBoard(
+    @Param('id') id: number,
+    @Body() body: board,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
+    try {
+      // Pegando o Usuário que está editando o Board
+      const token = this.authService.verifyToken(req.cookies.jwt);
+      const { title, description } = body;
+
+      // Caso algum dos campos venha vazio
+      if (!title || !description) throw new NotAcceptableException();
+
+      // Edita as informações do Board
+      const editedBoard = await this.boardService.editBoard(
+        id,
+        title,
+        description,
+      );
+
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.CREATED,
+        'Board Edited Successfully!',
+        editedBoard,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        return ResponseUtil.sendResponse(
+          res,
+          error.getStatus(), 
+          error.message || 'An error occurred',
+        );
+      }
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
+  }
 }

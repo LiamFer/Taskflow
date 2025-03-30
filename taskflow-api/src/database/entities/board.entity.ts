@@ -1,5 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { User } from './user.entity';
+import { List } from './list.entity';
 
 @Entity()
 export class Board {
@@ -15,6 +24,9 @@ export class Board {
   // Dono do Board
   @ManyToOne(() => User, (user) => user.ownedBoards)
   owner: User;
+
+  @OneToMany(() => List, (list) => list.board, { cascade: true })
+  lists: List[];
 
   // Membros do Board
   @ManyToMany(() => User, (user) => user.boards)
