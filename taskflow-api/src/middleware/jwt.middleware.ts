@@ -2,6 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from 'src/modules/Auth/auth.service';
 import * as dayjs from 'dayjs';
+import { readSync } from 'fs';
 
 // Middleware que verifica se o Token recebido é válido ou não
 @Injectable()
@@ -12,7 +13,7 @@ export class JWTMiddleware implements NestMiddleware {
     const token = req.cookies.jwt;
 
     // Verificando se recebeu o Token
-    if (!token) next();
+    if (!token) return next();
 
     // Verificando se ele é válido
     try {
