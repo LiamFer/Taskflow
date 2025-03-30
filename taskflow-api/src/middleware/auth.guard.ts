@@ -12,7 +12,6 @@ export class AuthGuard implements CanActivate {
       this.authService.verifyToken(token);
       return true;
     } catch (error) {
-      console.log('Não pode acessar!');
       return false;
     }
   }

@@ -11,19 +11,14 @@ import {
   Param,
   Put,
   NotAcceptableException,
+  Delete,
 } from '@nestjs/common';
-import { BoardService, validationResponse } from './board.service';
+import { BoardService } from './board.service';
 import { Response, Request } from 'express';
 import { ResponseUtil } from 'src/utils/response';
 import { AuthService } from '../Auth/auth.service';
-import { user } from 'src/interfaces/userInterface';
 import { board } from 'src/interfaces/boardInterface';
 import { AuthGuard } from 'src/middleware/auth.guard';
-
-// POST /boards → Criar board
-// GET /boards → Listar boards do usuário
-// PUT /boards/:id → Editar board
-// DELETE /boards/:id
 
 // BOARDS ROUTE
 @Controller('boards')
@@ -107,7 +102,7 @@ export class BoardController {
 
       return ResponseUtil.sendResponse(
         res,
-        HttpStatus.CREATED,
+        HttpStatus.OK,
         'Board Edited Successfully!',
         editedBoard,
       );
@@ -115,7 +110,38 @@ export class BoardController {
       if (error instanceof HttpException) {
         return ResponseUtil.sendResponse(
           res,
-          error.getStatus(), 
+          error.getStatus(),
+          error.message || 'An error occurred',
+        );
+      }
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
+  }
+
+  @Delete(':id')
+  async deleteBoard(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
+    try {
+      // Pegando o Usuário que está editando o Board
+      const token = this.authService.verifyToken(req.cookies.jwt);
+      await this.boardService.deleteBoard(id);
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.NO_CONTENT,
+        'Board Deleted Successfully!',
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        return ResponseUtil.sendResponse(
+          res,
+          error.getStatus(),
           error.message || 'An error occurred',
         );
       }
