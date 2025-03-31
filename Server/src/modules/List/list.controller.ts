@@ -82,6 +82,76 @@ export class ListController {
     }
   }
 
+@Put(':id')
+  async updateList(
+    @Param('id') id: number,
+    @Body() body: list,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
+    try {
+      // Pegando o Usuário que está editando o Board
+      const title = body.title;
+      // Caso algum dos campos venha vazio
+      if (!title || !id) throw new NotAcceptableException();
+
+      // Edita as informações do Board
+      const editedList = await this.listService.editList(
+        id,
+        title
+      );
+
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.OK,
+        'List Edited Successfully!',
+        editedList,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        return ResponseUtil.sendResponse(
+          res,
+          error.getStatus(),
+          error.message || 'An error occurred',
+        );
+      }
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
+  }
+
+  @Delete(':id')
+  async deleteList(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
+    try {
+      await this.listService.deleteList(id);
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.NO_CONTENT,
+        'List Deleted Successfully!',
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        return ResponseUtil.sendResponse(
+          res,
+          error.getStatus(),
+          error.message || 'An error occurred',
+        );
+      }
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
+  }
+
 
 
 }

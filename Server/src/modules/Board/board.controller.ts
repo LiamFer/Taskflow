@@ -97,7 +97,6 @@ export class BoardController {
   ): Promise<object> {
     try {
       // Pegando o Usuário que está editando o Board
-      const token = this.authService.verifyToken(req.cookies.jwt);
       const { title, description } = body;
 
       // Caso algum dos campos venha vazio
@@ -140,7 +139,6 @@ export class BoardController {
   ): Promise<object> {
     try {
       // Pegando o Usuário que está editando o Board
-      const token = this.authService.verifyToken(req.cookies.jwt);
       await this.boardService.deleteBoard(id);
       return ResponseUtil.sendResponse(
         res,
