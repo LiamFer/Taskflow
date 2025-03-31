@@ -24,30 +24,28 @@ export class ListService {
   }
 
   async getLists(boardID: number): Promise<List[]> {
-    return this.listRepository.find({
-      where: { board: { id: boardID } },
-      relations: ['members', 'lists'],
+    return await this.listRepository.find({
+      where: { board: { id: boardID } }
     });
   }
 
-  async editList(id: number,title:string): Promise<List | null> {
+  async editList(id: number, title: string): Promise<List | null> {
     const property = await this.listRepository.findOne({
       where: { id },
     });
 
     // Caso não exista uma Lista com esse ID
-    if(!property) throw new NotFoundException
+    if (!property) throw new NotFoundException();
 
     return this.listRepository.save({
       ...property,
-      ...{title},
+      ...{ title },
     });
   }
 
   async deleteList(id: number): Promise<DeleteResult> {
-    const result = await this.listRepository.delete({id})
-    if(!result.affected) throw new NotFoundException
+    const result = await this.listRepository.delete({ id });
+    if (!result.affected) throw new NotFoundException();
     return result;
   }
-
 }

@@ -62,4 +62,26 @@ export class ListController {
       );
     }
   }
+
+  @Get('/boards/:boardId')
+  async getLists(@Param('boardId') boardId: number,@Res() res: Response, @Req() req: Request): Promise<object> {
+    try {
+      const lists = await this.listService.getLists(boardId);
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.OK,
+        'Data Retrieved Successfully!',
+        lists,
+      );
+    } catch (error) {
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
+  }
+
+
+
 }

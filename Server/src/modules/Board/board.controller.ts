@@ -75,7 +75,7 @@ export class BoardController {
       const boards = await this.boardService.getBoards(token.id);
       return ResponseUtil.sendResponse(
         res,
-        HttpStatus.CREATED,
+        HttpStatus.OK,
         'Data Retrieved Successfully!',
         boards,
       );
