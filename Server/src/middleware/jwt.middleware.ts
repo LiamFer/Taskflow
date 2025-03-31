@@ -29,7 +29,7 @@ export class JWTMiddleware implements NestMiddleware {
         res.cookie('jwt', newToken);
       }
     } catch (error) {
-      // Token Inválido Redirecionar pra Página de Login
+      // Token Inválido Redirecionar pra Página de Login e limpar JWT inválido
       res.clearCookie('jwt');
       console.log(error);
       ResponseUtil.sendResponse(res, HttpStatus.UNAUTHORIZED, 'Login Expirado');
