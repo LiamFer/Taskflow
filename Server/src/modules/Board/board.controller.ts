@@ -12,6 +12,7 @@ import {
   Put,
   NotAcceptableException,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { Response, Request } from 'express';
@@ -40,6 +41,8 @@ export class BoardController {
       // Pegando o Usuário que está criando o Board
       const token = this.authService.verifyToken(req.cookies.jwt);
       const { title, description } = body;
+      if (!title || !description) throw new BadRequestException();
+
       const board = { title: title, description: description, owner: token };
 
       await this.boardService.createBoard(board);
@@ -49,6 +52,13 @@ export class BoardController {
         'Board Created Successfully!',
       );
     } catch (error) {
+      if (error instanceof HttpException) {
+        return ResponseUtil.sendResponse(
+          res,
+          error.getStatus(),
+          error.message || 'An error occurred',
+        );
+      }
       return ResponseUtil.sendResponse(
         res,
         HttpStatus.INTERNAL_SERVER_ERROR,
