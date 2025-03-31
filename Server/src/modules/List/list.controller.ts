@@ -64,7 +64,11 @@ export class ListController {
   }
 
   @Get('/boards/:boardId')
-  async getLists(@Param('boardId') boardId: number,@Res() res: Response, @Req() req: Request): Promise<object> {
+  async getLists(
+    @Param('boardId') boardId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
     try {
       const lists = await this.listService.getLists(boardId);
       return ResponseUtil.sendResponse(
@@ -82,7 +86,7 @@ export class ListController {
     }
   }
 
-@Put(':id')
+  @Put(':id')
   async updateList(
     @Param('id') id: number,
     @Body() body: list,
@@ -96,10 +100,7 @@ export class ListController {
       if (!title || !id) throw new NotAcceptableException();
 
       // Edita as informações do Board
-      const editedList = await this.listService.editList(
-        id,
-        title
-      );
+      const editedList = await this.listService.editList(id, title);
 
       return ResponseUtil.sendResponse(
         res,
@@ -151,7 +152,4 @@ export class ListController {
       );
     }
   }
-
-
-
 }
