@@ -5,9 +5,10 @@ import { JWTMiddleware } from './middleware/jwt.middleware';
 import { AuthService } from './modules/Auth/auth.service';
 import { BoardModule } from './modules/Board/board.module';
 import { ListModule } from './modules/List/list.module';
+import { TaskModule } from './modules/Task/task.module';
 
 @Module({
-  imports: [UserModule, BoardModule,ListModule, DatabaseModule],
+  imports: [UserModule, BoardModule,ListModule,TaskModule, DatabaseModule],
   providers: [AuthService],
 })
 export class AppModule implements NestModule {
