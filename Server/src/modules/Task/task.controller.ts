@@ -17,20 +17,16 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { ResponseUtil } from 'src/utils/response';
-import { AuthService } from '../Auth/auth.service';
 import { AuthGuard } from 'src/middleware/auth.guard';
-import { list } from 'src/interfaces/listInterface';
-import { Board } from 'src/database/entities/board.entity';
 import { TaskService } from './task.service';
 import { task } from 'src/interfaces/taskInterface';
 
-// BOARDS ROUTE
+// TASKS ROUTE
 @Controller('tasks')
 @UseGuards(AuthGuard)
 export class TaskController {
   constructor(
     private readonly taskService: TaskService,
-    private authService: AuthService,
   ) {}
 
   @Post('/lists/:listId')
@@ -45,11 +41,12 @@ export class TaskController {
       const { title, description } = body;
       if (!title) throw new NotAcceptableException();
       const task: task = { title, description, list: { id: listId } };
-      await this.taskService.createTask(task);
+      const newTask = await this.taskService.createTask(task);
       return ResponseUtil.sendResponse(
         res,
         HttpStatus.CREATED,
         'Task Created Successfully!',
+        newTask,
       );
     } catch (error) {
       if (error instanceof HttpException) {
@@ -104,7 +101,7 @@ export class TaskController {
         throw new NotAcceptableException();
 
       // Edita as informações da Task menos a Lista que ela pertence
-      const editedList = await this.taskService.editTask(
+      const editedTask = await this.taskService.editTask(
         id,
         title,
         description,
@@ -115,7 +112,7 @@ export class TaskController {
         res,
         HttpStatus.OK,
         'Task Edited Successfully!',
-        editedList,
+        editedTask,
       );
     } catch (error) {
       if (error instanceof HttpException) {
@@ -141,12 +138,12 @@ export class TaskController {
     @Req() req: Request,
   ): Promise<object> {
     try {
-      const {listId} = body;
+      const { listId } = body;
       // Caso algum dos campos venha vazio/undefined
       if (!listId || !id) throw new NotAcceptableException();
 
       // Move a Task de uma Lista pra Outra
-      const editedList = await this.taskService.changeTaskList(id, {
+      const editedTask = await this.taskService.changeTaskList(id, {
         id: listId,
       });
 
@@ -154,7 +151,7 @@ export class TaskController {
         res,
         HttpStatus.OK,
         'Task Moved Successfully!',
-        editedList,
+        editedTask,
       );
     } catch (error) {
       if (error instanceof HttpException) {

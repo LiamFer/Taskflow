@@ -41,11 +41,12 @@ export class ListController {
     // Criando a lista dentro do Board
     try {
       const list: list = { title: body.title, board: { id: boardId } as Board };
-      await this.listService.createList(list);
+      const newList = await this.listService.createList(list);
       return ResponseUtil.sendResponse(
         res,
         HttpStatus.CREATED,
         'List Created Successfully!',
+        newList,
       );
     } catch (error) {
       if (error instanceof HttpException) {

@@ -49,11 +49,14 @@ export class BoardController {
 
       const board = { title: title, description: description, owner: token };
 
-      await this.boardService.createBoard(board);
+      // Desestruturando o objeto pra voltar só o que eu quero
+      let { id } = await this.boardService.createBoard(board);
+
       return ResponseUtil.sendResponse(
         res,
         HttpStatus.CREATED,
         'Board Created Successfully!',
+        { id, title, description },
       );
     } catch (error) {
       if (error instanceof HttpException) {
@@ -186,6 +189,7 @@ export class BoardController {
         res,
         HttpStatus.CREATED,
         'Member added Successfully!',
+        {name:user.name,email:user.email},
       );
     } catch (error) {
       if (error instanceof HttpException) {
