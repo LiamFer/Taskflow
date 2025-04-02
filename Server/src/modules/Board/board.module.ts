@@ -6,10 +6,12 @@ import { BoardService } from './board.service';
 import { BoardController } from './board.controller';
 import { List } from 'src/database/entities/list.entity';
 import { Task } from 'src/database/entities/task.entity';
+import { UserService } from '../User/user.service';
+import { User } from 'src/database/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Board,List,Task])],
+  imports: [TypeOrmModule.forFeature([Board,List,Task,User])],
   controllers: [BoardController],
-  providers: [AuthService,BoardService],
+  providers: [AuthService,BoardService,UserService],
 })
 export class BoardModule {}
