@@ -1,11 +1,12 @@
 import { Button, Form, Card, Input, FloatButton } from "antd";
 import { useContext, useState } from "react";
+import { SunOutlined, MoonOutlined } from "@ant-design/icons";
 import { themeContext } from "../../Context/themeContext";
 import styles from "./login.module.css";
 
 export default function Login() {
   const [form] = Form.useForm();
-  const { setDarkMode } = useContext(themeContext);
+  const { darkMode ,setDarkMode } = useContext(themeContext);
   const [activeTab, setActiveTab] = useState("1");
 
   const tabList = [
@@ -57,7 +58,7 @@ export default function Login() {
             </Form.Item>
           </Card>
         </Form>
-        <FloatButton tooltip="Change Theme" onClick={() => setDarkMode((prev) => !prev)}></FloatButton>
+        <FloatButton icon={darkMode ? <SunOutlined /> : <MoonOutlined />} tooltip="Change Theme" onClick={() => setDarkMode((prev) => !prev)}></FloatButton>
       </main>
     </>
   );
