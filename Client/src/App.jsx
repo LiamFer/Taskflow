@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, themeContext } from "./Context/themeContext";
 import { router } from "./Router";
 import { useContext } from "react";
+import { UserProvider } from "./Context/userContext";
 
 const AppContent = () => {
   const { darkMode } = useContext(themeContext);
@@ -24,9 +25,11 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <UserProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </UserProvider>
   );
 };
 
