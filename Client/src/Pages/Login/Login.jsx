@@ -33,8 +33,17 @@ export default function Login() {
   return (
     <>
       <main className={styles.box}>
+        <div className={styles.loader}>
+          <div className={styles.loaderSquare}></div>
+          <div className={styles.loaderSquare}></div>
+          <div className={styles.loaderSquare}></div>
+          <div className={styles.loaderSquare}></div>
+          <div className={styles.loaderSquare}></div>
+          <div className={styles.loaderSquare}></div>
+          <div className={styles.loaderSquare}></div>
+        </div>
+
         <Form
-          className={styles.form}
           layout="vertical"
           form={form}
           onFinish={onFinish}
@@ -45,7 +54,10 @@ export default function Login() {
             title="TASKFLOW"
             tabList={tabList}
             activeTabKey={activeTab}
-            onTabChange={(key) => setActiveTab(key)}
+            onTabChange={(key) => {
+              setActiveTab(key);
+              form.resetFields();
+            }}
           >
             {activeTab == "1" ? <LoginForm /> : <RegisterForm />}
           </Card>
