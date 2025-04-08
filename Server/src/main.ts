@@ -10,13 +10,17 @@ async function bootstrap() {
 
   app.use(helmet());
   app.use(cookieParser());
+  app.enableCors({
+    origin: 'http://localhost:5173', // libera seu front-end
+    credentials: true,
+  });
 
   // 📌 Configuração da Documentação do Swagger
   const config = new DocumentBuilder()
     .setTitle('TaskFlow API')
     .setDescription('API para gerenciamento de tarefas e colaboração')
     .setVersion('1.0')
-    .addBearerAuth() 
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
