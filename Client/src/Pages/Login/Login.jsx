@@ -7,13 +7,15 @@ import LoginForm from "../../Components/LoginForm/LoginForm";
 import RegisterForm from "../../Components/RegisterForm/RegisterForm";
 import { authMe, createUser, login } from "../../Services/userService";
 import { userContext } from "../../Context/userContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [form] = Form.useForm();
   const { darkMode, setDarkMode } = useContext(themeContext);
   const [activeTab, setActiveTab] = useState("1");
   const [api, contextHolder] = notification.useNotification();
-  const { user,setUser } = useContext(userContext);
+  const { setUser } = useContext(userContext);
+  const navigate = useNavigate();
 
   const tabList = [
     {
@@ -30,11 +32,7 @@ export default function Login() {
     if (activeTab == "1") {
       login(values)
         .then((response) => {
-          authMe().then((response) => setUser(response.data.data));
-          api["success"]({
-            message: "Login Efetuado!",
-            description: response.data.message,
-          });
+          authMe().then((response) => setUser(response.data.data)).finally(() => navigate("/home"));
         })
         .catch((e) => {
           api["error"]({
