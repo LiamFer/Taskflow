@@ -1,12 +1,13 @@
 import { SunOutlined, MoonOutlined } from "@ant-design/icons";
-import { Layout, theme, FloatButton } from "antd";
+import { Layout, theme, FloatButton, Avatar } from "antd";
 import React, { useState, useContext } from "react";
 import { themeContext } from "../../Context/themeContext";
 import { Outlet } from "react-router-dom";
 import { userContext } from "../../Context/userContext";
-import SiderMenu from "./../../Components/Sider/siderMenu";
-import SiderBelow from "../../Components/Sider/siderBelow";
-import SiderLogo from "../../Components/Sider/siderLogo";
+import SiderMenu from "../../Components/AppLayout/siderMenu";
+import SiderBelow from "../../Components/AppLayout/siderBelow";
+import SiderLogo from "../../Components/AppLayout/siderLogo";
+import AppHeader from "../../Components/AppLayout/Header";
 const { Header, Content, Footer, Sider } = Layout;
 
 const Home = () => {
@@ -40,7 +41,7 @@ const Home = () => {
       </Sider>
 
       <Layout>
-        <Header style={{ padding: 0, background: token.colorBgContainer }} />
+        <AppHeader token={token} user={user}/>
 
         <Content style={{ margin: "0 16px" }}>
           <Outlet />
