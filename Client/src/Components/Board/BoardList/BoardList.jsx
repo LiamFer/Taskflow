@@ -10,7 +10,7 @@ export default function BoardList({ list }) {
   const { token } = theme.useToken();
 
   useEffect(() => {
-    getTasks(list?.id).then((response) => console.log(response.data.data));
+    getTasks(list?.id).then((response) => setTasks(response.data.data));
   }, []);
 
   return (
