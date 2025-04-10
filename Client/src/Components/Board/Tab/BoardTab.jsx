@@ -34,7 +34,7 @@ export default function BoardTab({ boardID }) {
           }}
         >
           {boardLists.map((list) => (
-            <BoardList list={list} />
+            <BoardList key={list.id} list={list} setBoardLists={setBoardLists} />
           ))}
         </div>
       ),
