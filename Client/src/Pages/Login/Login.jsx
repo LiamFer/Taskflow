@@ -14,8 +14,12 @@ export default function Login() {
   const { darkMode, setDarkMode } = useContext(themeContext);
   const [activeTab, setActiveTab] = useState("1");
   const [api, contextHolder] = notification.useNotification();
-  const { setUser } = useContext(userContext);
+  const { user, setUser } = useContext(userContext);
   const navigate = useNavigate();
+
+  if (user) {
+    navigate("/home");
+  }
 
   const tabList = [
     {
@@ -32,7 +36,9 @@ export default function Login() {
     if (activeTab == "1") {
       login(values)
         .then((response) => {
-          authMe().then((response) => setUser(response.data.data)).finally(() => navigate("/home"));
+          authMe()
+            .then((response) => setUser(response.data.data))
+            .finally(() => navigate("/home"));
         })
         .catch((e) => {
           api["error"]({
@@ -79,6 +85,7 @@ export default function Login() {
         <Form
           layout="vertical"
           form={form}
+          autoComplete="off"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
         >

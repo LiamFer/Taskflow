@@ -1,7 +1,26 @@
 import { LogoutOutlined, SettingOutlined } from "@ant-design/icons";
-import { Menu, Popconfirm } from "antd";
+import { Menu, Modal } from "antd";
+import { logout } from "../../Services/userService";
 
-export default function SiderBelow({ collapsed, user, token }) {
+
+export default function SiderBelow({ collapsed,open,setOpen }) {
+  const [modal, contextHolder] = Modal.useModal();
+
+  const showConfirm = () => {
+    modal.confirm({
+      title: "Deseja realmente sair?",
+      content: "Essa ação irá encerrar sua sessão.",
+      okText: "Sim",
+      cancelText: "Cancelar",
+      onOk() {
+        logout()
+      },
+      onCancel() {
+        console.log("Usuário cancelou");
+      },
+    });
+  };
+
   return (
     <div
       style={{
@@ -20,7 +39,7 @@ export default function SiderBelow({ collapsed, user, token }) {
           title="Logout"
           icon={<LogoutOutlined />}
           onClick={() => {
-            console.log("Logout");
+            showConfirm();
           }}
         >
           {!collapsed && "Logout"}
@@ -28,15 +47,15 @@ export default function SiderBelow({ collapsed, user, token }) {
         <Menu.Item
           key="settings"
           title="Config."
-
           icon={<SettingOutlined />}
           onClick={() => {
-            console.log("Configurações");
+            setOpen(true)
           }}
         >
           {!collapsed && "Config."}
         </Menu.Item>
       </Menu>
+      {contextHolder}
     </div>
   );
 }

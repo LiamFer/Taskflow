@@ -106,15 +106,21 @@ export class UserController {
 
     try {
       const tokenData = await this.authService.verifyToken(token);
-      const user = await this.userService.findByEmail(tokenData.email)
+      const user = await this.userService.findByEmail(tokenData.email);
 
-      if(!user) {return ResponseUtil.sendResponse(
-        res,
-        HttpStatus.UNAUTHORIZED,
-        'Unauthorized!',
-      );}
+      if (!user) {
+        return ResponseUtil.sendResponse(
+          res,
+          HttpStatus.UNAUTHORIZED,
+          'Unauthorized!',
+        );
+      }
 
-      return ResponseUtil.sendResponse(res, HttpStatus.OK, 'Authenticated!',{id:user.id,name:user.name,email:user.email});
+      return ResponseUtil.sendResponse(res, HttpStatus.OK, 'Authenticated!', {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      });
     } catch (error) {
       return ResponseUtil.sendResponse(
         res,
@@ -122,5 +128,20 @@ export class UserController {
         'Unauthorized!',
       );
     }
+  }
+
+  @Get('logout')
+  async Logout(
+    @Body() body: user,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
+    // Endpoint pra logout
+    res.clearCookie('jwt');
+    return ResponseUtil.sendResponse(
+      res,
+      HttpStatus.UNAUTHORIZED,
+      'Log out!',
+    );
   }
 }

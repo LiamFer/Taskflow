@@ -10,6 +10,7 @@ import {
   TeamOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+import { getBoards } from "../../Services/boardService";
 
 // Função que cria cada item do menu
 function getItem(label, key, icon, children) {
@@ -20,14 +21,6 @@ function getItem(label, key, icon, children) {
     label,
   };
 }
-
-const items = [
-  getItem("Home", "/home", <HomeOutlined />),
-  getItem("Boards", "/boards", <AppstoreOutlined />),
-  getItem("My Tasks", "/my-tasks", <CheckSquareOutlined />),
-  getItem("Archived", "/archived", <InboxOutlined />),
-  getItem("Teams", "/teams", <TeamOutlined />),
-];
 
 function findLabelByKey(items, key) {
   for (const item of items) {
@@ -43,7 +36,12 @@ function findLabelByKey(items, key) {
 export default function SiderMenu() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userBoards, setUserBoards] = useState([]);
   const [selectedKey, setSelectedKey] = useState(location.pathname);
+
+  useEffect(() => {
+    getBoards().then((response) => setUserBoards(response.data.data));
+  }, []);
 
   useEffect(() => {
     setSelectedKey(location.pathname);
@@ -55,6 +53,18 @@ export default function SiderMenu() {
     navigate(key);
   };
 
+  const items = [
+    getItem("Home", "/home", <HomeOutlined />),
+    getItem(
+      "Boards",
+      "/home/boards",
+      <AppstoreOutlined />,
+      userBoards.map((board) => getItem(board.title, `/home/boards/${board.id}`))
+    ),
+    getItem("My Tasks", "/my-tasks", <CheckSquareOutlined />),
+    getItem("Archived", "/archived", <InboxOutlined />),
+    getItem("Teams", "/teams", <TeamOutlined />),
+  ];
   return (
     <Menu
       mode="inline"

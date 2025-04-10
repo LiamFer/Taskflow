@@ -39,6 +39,7 @@ export default function RegisterForm() {
           },
           { min: 6, message: "Password must have at least 6 characters!" },
         ]}
+        autoComplete="new-password"
         hasFeedback
       >
         <Input.Password />
