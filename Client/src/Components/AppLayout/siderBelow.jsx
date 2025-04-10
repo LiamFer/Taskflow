@@ -7,19 +7,20 @@ export default function SiderBelow({ collapsed,open,setOpen }) {
   const [modal, contextHolder] = Modal.useModal();
 
   const showConfirm = () => {
-    modal.confirm({
-      title: "Deseja realmente sair?",
-      content: "Essa ação irá encerrar sua sessão.",
-      okText: "Sim",
-      cancelText: "Cancelar",
-      onOk() {
-        logout()
-      },
-      onCancel() {
-        console.log("Usuário cancelou");
-      },
-    });
-  };
+  modal.confirm({
+    title: "Are you sure you want to log out?",
+    content: "This action will end your session.",
+    okText: "Yes",
+    cancelText: "Cancel",
+    onOk() {
+      logout();
+    },
+    onCancel() {
+      console.log("User canceled");
+    },
+  });
+};
+
 
   return (
     <div
