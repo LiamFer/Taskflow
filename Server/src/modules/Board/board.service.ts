@@ -126,7 +126,7 @@ export class BoardService {
   async getMembers(id: number): Promise<Board[]> {
     return this.boardRepository
     .createQueryBuilder('board')
-    .leftJoin('board.members', 'member')
+    .innerJoin('board.members', 'member')
     .where('board.id = :id', { id })
     .select(['member.name', 'member.email'])
     .getRawMany();

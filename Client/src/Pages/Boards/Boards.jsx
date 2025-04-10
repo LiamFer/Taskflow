@@ -3,21 +3,35 @@ import {
   TableOutlined,
   UnorderedListOutlined,
   ClockCircleOutlined,
+  UserAddOutlined,
+  UserOutlined,
+  AntDesignOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Tabs, theme, Card } from "antd";
+import { Button, Tabs, theme, Card, Avatar, Tooltip } from "antd";
+import stringToColor from "../../utils/stringToColor";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getBoards } from "../../Services/boardService";
+import { getBoards, getLists } from "../../Services/boardService";
+import BoardHeader from "./../../Components/Board/BoardHeader";
+import BoardList from "../../Components/Board/BoardList/BoardList";
 
 export default function Boards() {
   const { boardID } = useParams();
   const [boardInfo, setBoardInfo] = useState();
+  const [boardLists, setBoardLists] = useState([]);
   const { token } = theme.useToken();
 
   useEffect(() => {
-    getBoards().then((response) =>
-      setBoardInfo(response.data.data.filter((board) => board.id == boardID)[0])
-    );
+    getBoards().then((response) => {
+      const boardData = response.data.data.filter(
+        (board) => board.id == boardID
+      )[0];
+      setBoardInfo(boardData);
+      getLists(boardData.id).then((response) =>
+        setBoardLists(response.data.data)
+      );
+    });
   }, [boardID]);
 
   const items = [
@@ -28,7 +42,19 @@ export default function Boards() {
         </span>
       ),
       key: "1",
-      children: "Conteúdo Kanban",
+      children: (
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            gap: 20,
+          }}
+        >
+          {boardLists.map((list) => (
+            <BoardList list={list} />
+          ))}
+        </div>
+      ),
     },
     {
       label: (
@@ -64,8 +90,7 @@ export default function Boards() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <h1>{boardInfo?.title}</h1>
-
+      <BoardHeader boardInfo={boardInfo} />
       <div
         style={{
           flex: 1, // ocupa o resto do espaço
@@ -73,10 +98,18 @@ export default function Boards() {
           padding: "10px",
         }}
       >
-        {" "}
         <Tabs
           defaultActiveKey="1"
           items={items}
+          tabBarExtraContent={
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => console.log("Adicionar membro")}
+            >
+              New List
+            </Button>
+          }
         />
       </div>
     </div>
