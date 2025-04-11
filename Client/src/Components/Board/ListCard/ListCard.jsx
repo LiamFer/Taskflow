@@ -21,7 +21,9 @@ export default function ListCard({ task, refreshTasks }) {
   };
 
   const handleEdit = (field, value) => {
-    updateTask({ ...taskData, [field]: value });
+    if (taskData[field] != value) {
+      updateTask({ ...taskData, [field]: value });
+    }
   };
 
   return (
@@ -59,7 +61,7 @@ export default function ListCard({ task, refreshTasks }) {
           >
             {taskData.title}
           </Paragraph>
-          <DeleteTaskButton taskID={task.id} refreshTasks={refreshTasks}/>
+          <DeleteTaskButton taskID={task.id} refreshTasks={refreshTasks} />
         </div>
       }
     >
