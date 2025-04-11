@@ -51,7 +51,7 @@ export default function BoardList({ list, setBoardLists }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {tasks.map((task) => (
-          <ListCard key={task.id} task={task} />
+          <ListCard key={task.id} task={task} refreshTasks={refreshTasks} />
         ))}
       </div>
 

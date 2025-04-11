@@ -2,9 +2,10 @@ import { Checkbox, theme, Card, Typography } from "antd";
 import { useState } from "react";
 import { editTask } from "../../../Services/boardService";
 import useNotify from "../../../Context/notificationContext";
+import DeleteTaskButton from "./DeleteTaskButton";
 const { Paragraph } = Typography;
 
-export default function ListCard({ task }) {
+export default function ListCard({ task, refreshTasks }) {
   const { token } = theme.useToken();
   const { notify } = useNotify();
   const [taskData, setTaskData] = useState({
@@ -19,12 +20,8 @@ export default function ListCard({ task }) {
       .catch(() => notify("error", "Error", "Failed to edit the task."));
   };
 
-  const handleEdit = (ev) => {
-    if (ev?.target?.value) {
-      updateTask({ ...taskData, completed: !taskData.completed });
-    } else {
-      updateTask({ ...taskData, title: ev });
-    }
+  const handleEdit = (field, value) => {
+    updateTask({ ...taskData, [field]: value });
   };
 
   return (
@@ -42,30 +39,48 @@ export default function ListCard({ task }) {
         >
           <Checkbox
             checked={taskData.completed}
-            onClick={handleEdit}
+            onClick={(ev) => {
+              handleEdit("completed", ev.target.checked);
+            }}
           ></Checkbox>
           <Paragraph
-            style={{ margin: 0, width: "100%" }}
+            style={{
+              margin: 0,
+              flexGrow: 1,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
             editable={{
-              onChange: handleEdit,
+              onChange: (ev) => {
+                handleEdit("title", ev);
+              },
               triggerType: "text",
             }}
           >
             {taskData.title}
           </Paragraph>
+          <DeleteTaskButton taskID={task.id} refreshTasks={refreshTasks}/>
         </div>
       }
     >
-      <p
+      <Paragraph
         style={{
           margin: 0,
+          width: "100%",
           color: token.colorTextDescription,
           fontWeight: "normal",
           fontSize: 11,
+          textWrap: "wrap",
+        }}
+        editable={{
+          onChange: (ev) => {
+            handleEdit("description", ev);
+          },
+          triggerType: "text",
         }}
       >
-        {`${task?.description?.substring(0, 19)}...`}
-      </p>
+        {taskData.description}
+      </Paragraph>
     </Card>
   );
 }

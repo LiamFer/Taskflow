@@ -11,4 +11,5 @@ export const deleteList = (listID) => api.delete(`/lists/${listID}`)
 
 export const createTask = (listID,data) => api.post(`/tasks/lists/${listID}`,data)
 export const editTask = (taskID,data) => api.put(`/tasks/${taskID}`,data)
+export const deleteTask = (taskID) => api.delete(`/tasks/${taskID}`)
 
