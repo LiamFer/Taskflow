@@ -7,3 +7,8 @@ export const getTasks = (listID) => api.get(`/tasks/lists/${listID}`)
 
 export const createList = (boardID,data) => api.post(`lists/boards/${boardID}`,data)
 export const deleteList = (listID) => api.delete(`/lists/${listID}`)
+
+
+export const createTask = (listID,data) => api.post(`/tasks/lists/${listID}`,data)
+export const editTask = (taskID,data) => api.put(`/tasks/${taskID}`,data)
+
