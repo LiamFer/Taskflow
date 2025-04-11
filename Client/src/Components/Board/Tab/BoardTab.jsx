@@ -8,20 +8,78 @@ import {
 import { Button, Tabs } from "antd";
 import { useEffect, useState } from "react";
 import BoardList from "../BoardList/BoardList";
-import { getLists } from "../../../Services/boardService";
+import { getLists, getTasks, moveTask } from "../../../Services/boardService";
 import CreateList from "../../Popups/CreateList";
+import { DndContext } from "@dnd-kit/core";
 
 export default function BoardTab({ boardID }) {
   const [boardLists, setBoardLists] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // State pra Atualizar as Listas caso o Usuário crie uma Nova !
   const [listsVersion, setListsVersion] = useState(0);
+
   useEffect(() => {
-    getLists(boardID).then((response) => setBoardLists(response.data.data));
+    getLists(boardID).then((response) => {
+      const lists = response.data.data;
+      Promise.all(
+        lists.map(async (list) => {
+          const tasksResponse = await getTasks(list.id);
+          return {
+            ...list,
+            tasks: tasksResponse.data.data.map((task) => {
+              return { ...task, listid: list.id };
+            }),
+          };
+        })
+      ).then((listsWithTasks) => {
+        setBoardLists(listsWithTasks);
+      });
+    });
   }, [boardID, listsVersion]);
 
   function refreshLists() {
     setListsVersion((prev) => prev + 1);
+  }
+
+  function getTask(id) {
+    let tasks = [];
+    boardLists.forEach((list) => {
+      tasks = [...tasks, ...list.tasks];
+    });
+    const task = tasks.filter((task) => task.id == id);
+    if (task) {
+      return task[0];
+    }
+    return task;
+  }
+
+  function moveTaskToList(task, listId) {
+    let data = [...boardLists];
+    data = data.map((list) => {
+      if (listId == list.id) {
+        let newList = { ...list };
+        newList.tasks.push(task);
+        return newList;
+      } else if (task.listid == list.id) {
+        let newList = { ...list };
+        newList.tasks = newList.tasks.filter((t) => t.id != task.id)
+        return newList
+      }
+      return list;
+    });
+    setBoardLists(data);
+    moveTask(task.id, { listId });
+  }
+
+  function handleDrag(event) {
+    const { active, over } = event;
+    if (!over) return;
+    const taskId = active.id;
+    const listId = over.id;
+    const task = getTask(taskId);
+    if (task && task.listid != listId) {
+      moveTaskToList(task, listId);
+    }
   }
 
   const items = [
@@ -40,13 +98,16 @@ export default function BoardTab({ boardID }) {
             gap: 20,
           }}
         >
-          {boardLists.map((list) => (
-            <BoardList
-              key={list.id}
-              list={list}
-              setBoardLists={setBoardLists}
-            />
-          ))}
+          <DndContext onDragEnd={handleDrag}>
+            {boardLists.map((list) => (
+              <BoardList
+                key={list.id}
+                list={list}
+                setBoardLists={setBoardLists}
+                refreshLists={refreshLists}
+              />
+            ))}
+          </DndContext>
         </div>
       ),
     },

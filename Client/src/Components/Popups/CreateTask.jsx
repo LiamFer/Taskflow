@@ -2,12 +2,7 @@ import { Form, Input, Modal } from "antd";
 import { createTask } from "../../Services/boardService";
 import useNotify from "../../Context/notificationContext";
 
-export default function CreateTask({
-  isModalOpen,
-  setIsModalOpen,
-  listID,
-  refreshTasks,
-}) {
+export default function CreateTask({ isModalOpen, setIsModalOpen, listID,refreshLists }) {
   const [form] = Form.useForm();
   const { notify } = useNotify();
 
@@ -18,9 +13,9 @@ export default function CreateTask({
         createTask(listID, values)
           .then(() => {
             notify("success", "Done", "Task created successfully!");
+            refreshLists();
             form.resetFields();
             setIsModalOpen(false);
-            refreshTasks();
           })
           .catch(() => {
             notify("error", "Error", "Failed to create the Task.");

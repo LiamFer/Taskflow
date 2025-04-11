@@ -3,9 +3,18 @@ import { useState } from "react";
 import { editTask } from "../../../Services/boardService";
 import useNotify from "../../../Context/notificationContext";
 import DeleteTaskButton from "./DeleteTaskButton";
+import { useDraggable } from "@dnd-kit/core";
 const { Paragraph } = Typography;
 
-export default function ListCard({ task, refreshTasks }) {
+export default function ListCard({ task, refreshLists }) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id
+  });
+
+  const style = transform
+    ? { transform: `translate(${transform.x}px,${transform.y}px)` }
+    : undefined;
+
   const { token } = theme.useToken();
   const { notify } = useNotify();
   const [taskData, setTaskData] = useState({
@@ -16,7 +25,7 @@ export default function ListCard({ task, refreshTasks }) {
 
   const updateTask = (data) => {
     editTask(task.id, data)
-      .then((response) => setTaskData(data))
+      .then(() => setTaskData(data))
       .catch(() => notify("error", "Error", "Failed to edit the task."));
   };
 
@@ -26,6 +35,8 @@ export default function ListCard({ task, refreshTasks }) {
 
   return (
     <Card
+      ref={setNodeRef}
+      style={{ ...style, cursor: "default" }}
       key={task.id}
       size="small"
       title={
@@ -37,12 +48,28 @@ export default function ListCard({ task, refreshTasks }) {
             width: "100%",
           }}
         >
+          <div
+            {...listeners}
+            {...attributes}
+            style={{
+              cursor: "grab",
+              padding: "0 4px",
+              fontWeight: "bold",
+              userSelect: "none",
+            }}
+            onMouseDown={(e) => e.stopPropagation()} // impede interferência
+          >
+            ☰
+          </div>
+
           <Checkbox
             checked={taskData.completed}
-            onClick={(ev) => {
+            onChange={(ev) => {
+              ev.stopPropagation();
               handleEdit("completed", ev.target.checked);
             }}
-          ></Checkbox>
+          />
+
           <Paragraph
             style={{
               margin: 0,
@@ -51,15 +78,14 @@ export default function ListCard({ task, refreshTasks }) {
               textOverflow: "ellipsis",
             }}
             editable={{
-              onChange: (ev) => {
-                handleEdit("title", ev);
-              },
+              onChange: (ev) => handleEdit("title", ev),
               triggerType: "text",
             }}
           >
             {taskData.title}
           </Paragraph>
-          <DeleteTaskButton taskID={task.id} refreshTasks={refreshTasks}/>
+
+          <DeleteTaskButton taskID={task.id} refreshLists={refreshLists} />
         </div>
       }
     >
@@ -73,9 +99,7 @@ export default function ListCard({ task, refreshTasks }) {
           textWrap: "wrap",
         }}
         editable={{
-          onChange: (ev) => {
-            handleEdit("description", ev);
-          },
+          onChange: (ev) => handleEdit("description", ev),
           triggerType: "text",
         }}
       >

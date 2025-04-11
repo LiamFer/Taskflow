@@ -3,23 +3,20 @@ import { Checkbox, Button, theme } from "antd";
 import styles from "./boardlist.module.css";
 import ListCard from "../ListCard/ListCard";
 import { useEffect, useState } from "react";
-import { getTasks } from "../../../Services/boardService";
 import DeleteListButton from "./DeleteListButton";
 import CreateTask from "../../Popups/CreateTask";
+import { useDroppable } from "@dnd-kit/core";
 
-export default function BoardList({ list, setBoardLists }) {
-  const [tasks, setTasks] = useState([]);
+export default function BoardList({ list, setBoardLists, refreshLists }) {
+  const { setNodeRef } = useDroppable({ id: list.id });
+
+  const [tasks, setTasks] = useState(list.tasks);
   const { token } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [TasksVersion, setTasksVersion] = useState(0);
-
-  function refreshTasks() {
-    setTasksVersion((prev) => prev + 1);
-  }
 
   useEffect(() => {
-    getTasks(list?.id).then((response) => setTasks(response.data.data));
-  }, [TasksVersion]);
+    setTasks(list.tasks);
+  }, [list.tasks]);
 
   return (
     <div
@@ -29,6 +26,7 @@ export default function BoardList({ list, setBoardLists }) {
         minWidth: 250,
         maxWidth: 300,
         flexGrow: 1,
+        minHeight: "80vh",
         gap: 20,
       }}
     >
@@ -49,17 +47,25 @@ export default function BoardList({ list, setBoardLists }) {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div
+        ref={setNodeRef}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+          height: "100%",
+        }}
+      >
         {tasks.map((task) => (
-          <ListCard key={task.id} task={task} refreshTasks={refreshTasks} />
+          <ListCard key={task.id} task={task} refreshLists={refreshLists} />
         ))}
       </div>
 
       <CreateTask
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
-        refreshTasks={refreshTasks}
         listID={list.id}
+        refreshLists={refreshLists}
       />
     </div>
   );

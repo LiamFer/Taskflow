@@ -3,14 +3,14 @@ import { Button, Popconfirm, Dropdown } from "antd";
 import useNotify from "../../../Context/notificationContext";
 import { deleteTask } from "../../../Services/boardService";
 
-export default function DeleteTaskButton({ taskID, refreshTasks }) {
+export default function DeleteTaskButton({ taskID, refreshLists }) {
   const { notify } = useNotify();
 
   const handleDelete = () => {
     deleteTask(taskID)
       .then((response) => {
         notify("success", "All done!", "Everything went smoothly.");
-        refreshTasks();
+        refreshLists();
       })
       .catch((err) => {
         notify(
