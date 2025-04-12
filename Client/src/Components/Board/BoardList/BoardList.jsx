@@ -43,7 +43,7 @@ export default function BoardList({ list, setBoardLists, refreshLists }) {
             type="text"
             icon={<PlusOutlined />}
           />
-          <DeleteListButton listID={list?.id} setBoardLists={setBoardLists} />
+           <DeleteListButton listID={list?.id} setBoardLists={setBoardLists} />
         </div>
       </div>
 

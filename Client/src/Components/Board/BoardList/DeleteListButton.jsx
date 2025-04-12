@@ -1,4 +1,4 @@
-import { EllipsisOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
 import { Button, Popconfirm, Dropdown } from "antd";
 import useNotify from "../../../Context/notificationContext";
 import { deleteList } from "../../../Services/boardService";
@@ -21,27 +21,16 @@ export default function DeleteListButton({ listID, setBoardLists }) {
       });
   };
 
-  const items = [
-    {
-      key: "1",
-      label: (
-        <Popconfirm
-          title="Delete this List"
-          description="Are you sure to delete this List?"
-          onConfirm={handleDelete}
-          onCancel={() => {}}
-          okText="Yes"
-          cancelText="No"
-        >
-          <a onClick={() => {}}>Delete List</a>
-        </Popconfirm>
-      ),
-    },
-  ];
-
   return (
-    <Dropdown menu={{ items }} placement="bottomLeft">
-      <Button type="text" icon={<EllipsisOutlined />} />
-    </Dropdown>
+    <Popconfirm
+      title="Delete this List"
+      description="Are you sure to delete this List?"
+      onConfirm={handleDelete}
+      onCancel={() => {}}
+      okText="Yes"
+      cancelText="No"
+    >
+      <Button type="text" icon={<DeleteOutlined />} />
+    </Popconfirm>
   );
 }

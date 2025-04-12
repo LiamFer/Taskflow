@@ -42,33 +42,33 @@ export default function BoardTab({ boardID }) {
   }
 
   function getTask(id) {
-    let tasks = [];
-    boardLists.forEach((list) => {
-      tasks = [...tasks, ...list.tasks];
-    });
-    const task = tasks.filter((task) => task.id == id);
-    if (task) {
-      return task[0];
+    for (const list of boardLists) {
+      const task = list.tasks.find((t) => t.id == id);
+      if (task) return task;
     }
-    return task;
+    return null;
   }
 
-  function moveTaskToList(task, listId) {
-    let data = [...boardLists];
-    data = data.map((list) => {
-      if (listId == list.id) {
-        let newList = { ...list };
-        newList.tasks.push(task);
-        return newList;
-      } else if (task.listid == list.id) {
-        let newList = { ...list };
-        newList.tasks = newList.tasks.filter((t) => t.id != task.id)
-        return newList
+  function moveTaskToList(task, targetListId) {
+    const updatedLists = boardLists.map((list) => {
+      if (list.id === task.listid) {
+        // Remove a Task da lista antiga
+        return {
+          ...list,
+          tasks: list.tasks.filter((t) => t.id !== task.id),
+        };
+      } else if (list.id === targetListId) {
+        // Adicionando a Task na Lista Nova
+        return {
+          ...list,
+          tasks: [...list.tasks, { ...task, listid: targetListId }],
+        };
       }
       return list;
     });
-    setBoardLists(data);
-    moveTask(task.id, { listId });
+
+    setBoardLists(updatedLists);
+    moveTask(task.id, { listId: targetListId });
   }
 
   function handleDrag(event) {
