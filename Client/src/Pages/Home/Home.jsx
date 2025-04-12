@@ -12,6 +12,7 @@ const { Content, Footer, Sider } = Layout;
 import { FileAddOutlined, SunOutlined, MoonOutlined } from "@ant-design/icons";
 import { themeContext } from "../../Context/themeContext";
 import { NotificationProvider } from "../../Context/notificationContext";
+import { BoardProvider } from "../../Context/boardContext";
 
 const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -51,7 +52,9 @@ const Home = () => {
             <AppHeader token={token} user={user} />
 
             <Content style={{ margin: "0px 16px" }}>
-              <Outlet />
+              <BoardProvider>
+                <Outlet />
+              </BoardProvider>
             </Content>
 
             <Footer style={{ textAlign: "center" }}>

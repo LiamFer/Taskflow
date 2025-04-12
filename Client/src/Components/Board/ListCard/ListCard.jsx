@@ -4,11 +4,14 @@ import { editTask } from "../../../Services/boardService";
 import useNotify from "../../../Context/notificationContext";
 import DeleteTaskButton from "./DeleteTaskButton";
 import { useDraggable } from "@dnd-kit/core";
+import { useBoardData } from "../../../Context/boardContext";
 const { Paragraph } = Typography;
 
-export default function ListCard({ task, refreshLists }) {
+export default function ListCard({ task }) {
+  const { setBoardData } = useBoardData();
+
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task.id
+    id: task.id,
   });
 
   const style = transform
@@ -30,7 +33,22 @@ export default function ListCard({ task, refreshLists }) {
   };
 
   const handleEdit = (field, value) => {
-    updateTask({ ...taskData, [field]: value });
+    if (taskData[field] != value) {
+      updateTask({ ...taskData, [field]: value });
+      setBoardData((prev) =>
+        prev.map((list) => {
+          return {
+            ...list,
+            tasks: list.tasks.map((t) => {
+              if (t.id == task.id) {
+                return {...t,...taskData,[field]: value }
+              }
+              return t;
+            }),
+          };
+        })
+      );
+    }
   };
 
   return (
@@ -85,7 +103,7 @@ export default function ListCard({ task, refreshLists }) {
             {taskData.title}
           </Paragraph>
 
-          <DeleteTaskButton taskID={task.id} refreshLists={refreshLists} />
+          <DeleteTaskButton taskID={task.id} />
         </div>
       }
     >

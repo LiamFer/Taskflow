@@ -7,7 +7,7 @@ import DeleteListButton from "./DeleteListButton";
 import CreateTask from "../../Popups/CreateTask";
 import { useDroppable } from "@dnd-kit/core";
 
-export default function BoardList({ list, setBoardLists, refreshLists }) {
+export default function BoardList({ list }) {
   const { setNodeRef } = useDroppable({ id: list.id });
 
   const [tasks, setTasks] = useState(list.tasks);
@@ -43,7 +43,7 @@ export default function BoardList({ list, setBoardLists, refreshLists }) {
             type="text"
             icon={<PlusOutlined />}
           />
-           <DeleteListButton listID={list?.id} setBoardLists={setBoardLists} />
+          <DeleteListButton listID={list?.id} />
         </div>
       </div>
 
@@ -57,7 +57,7 @@ export default function BoardList({ list, setBoardLists, refreshLists }) {
         }}
       >
         {tasks.map((task) => (
-          <ListCard key={task.id} task={task} refreshLists={refreshLists} />
+          <ListCard key={task.id} task={task} />
         ))}
       </div>
 
@@ -65,7 +65,6 @@ export default function BoardList({ list, setBoardLists, refreshLists }) {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         listID={list.id}
-        refreshLists={refreshLists}
       />
     </div>
   );

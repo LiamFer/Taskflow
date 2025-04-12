@@ -1,16 +1,18 @@
-import { DeleteOutlined, EllipsisOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Popconfirm } from "antd";
 import useNotify from "../../../Context/notificationContext";
 import { deleteTask } from "../../../Services/boardService";
+import { useBoardData } from "../../../Context/boardContext";
 
-export default function DeleteTaskButton({ taskID, refreshLists }) {
+export default function DeleteTaskButton({ taskID }) {
   const { notify } = useNotify();
+  const { fetchBoard } = useBoardData();
 
   const handleDelete = () => {
     deleteTask(taskID)
       .then((response) => {
         notify("success", "All done!", "Everything went smoothly.");
-        refreshLists();
+        fetchBoard();
       })
       .catch((err) => {
         notify(

@@ -3,17 +3,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getBoards } from "../../Services/boardService";
 import BoardHeader from "./../../Components/Board/BoardHeader";
 import BoardTab from "../../Components/Board/Tab/BoardTab";
+import { useBoardData } from "../../Context/boardContext";
 
 export default function Boards() {
   const { boardID } = useParams();
   const navigate = useNavigate();
+  const { fetchBoard, setboardID } = useBoardData();
   const [boardInfo, setBoardInfo] = useState();
 
   useEffect(() => {
+    setboardID(boardID);
     getBoards().then((response) => {
-      const BoardData = response.data.data.filter(
-        (board) => board.id == boardID
-      )[0];
+      const BoardData = response.data.data.find((board) => board.id == boardID);
       if (!BoardData) navigate("/home");
       setBoardInfo(BoardData);
     });
