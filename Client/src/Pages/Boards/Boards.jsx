@@ -21,6 +21,7 @@ export default function Boards() {
   return (
     <div
       style={{
+        margin: "0px 16px",
         display: "flex",
         flexDirection: "column",
         height: "100%",

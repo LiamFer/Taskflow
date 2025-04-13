@@ -61,7 +61,7 @@ const Home = () => {
 
               <Content
                 style={{
-                  margin: "0px 16px",
+
                   display: "flex",
                   flexDirection: "column",
                   flex: 1,
