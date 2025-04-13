@@ -8,8 +8,6 @@ export function UserProvider({ children }) {
   let [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
 
-  console.log("UserProvider mounted");
-
   // Verificar se o JWT atual é válido ao abrir o App
   useEffect(() => {
     api.interceptors.response.use(

@@ -1,15 +1,15 @@
 import { Form, Input, Modal } from "antd";
 import { createList } from "../../Services/boardService";
 import useNotify from "../../Context/notificationContext";
+import { useBoardData } from "../../Context/boardContext";
 
 export default function CreateList({
   isModalOpen,
   setIsModalOpen,
-  boardID,
-  refreshLists,
 }) {
   const [form] = Form.useForm();
   const { notify } = useNotify();
+  const { fetchBoard,boardID } = useBoardData();
 
   const handleOk = () => {
     form
@@ -20,7 +20,7 @@ export default function CreateList({
             notify("success", "Done", "List created successfully!");
             form.resetFields();
             setIsModalOpen(false);
-            refreshLists();
+            fetchBoard(boardID);
           })
           .catch(() => {
             notify("error", "Error", "Failed to create the list.");

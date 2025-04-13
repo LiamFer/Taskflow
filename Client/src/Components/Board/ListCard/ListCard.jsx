@@ -1,11 +1,32 @@
-import { Checkbox, theme, Card, Typography } from "antd";
-import { useState } from "react";
+import { Checkbox, theme, Card, Typography, Button } from "antd";
+import { useEffect, useState } from "react";
 import { editTask } from "../../../Services/boardService";
 import useNotify from "../../../Context/notificationContext";
 import DeleteTaskButton from "./DeleteTaskButton";
+import { useDraggable } from "@dnd-kit/core";
+import { useBoardData } from "../../../Context/boardContext";
+import { MenuOutlined } from "@ant-design/icons";
+
 const { Paragraph } = Typography;
 
-export default function ListCard({ task, refreshTasks }) {
+export default function ListCard({ task }) {
+  const { patchTask } = useBoardData();
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+    });
+
+  const style = transform
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+        position: "fixed",
+        zIndex: 9999,
+        width: "250px",
+        pointerEvents: "none",
+        opacity: 0.5,
+      }
+    : undefined;
+
   const { token } = theme.useToken();
   const { notify } = useNotify();
   const [taskData, setTaskData] = useState({
@@ -14,20 +35,37 @@ export default function ListCard({ task, refreshTasks }) {
     completed: task.completed,
   });
 
+  useEffect(() => {
+    setTaskData({
+      title: task.title,
+      description: task.description,
+      completed: task.completed,
+    });
+  }, [task]);
+
   const updateTask = (data) => {
     editTask(task.id, data)
-      .then((response) => setTaskData(data))
+      .then(() => {
+        setTaskData(data);
+      })
       .catch(() => notify("error", "Error", "Failed to edit the task."));
   };
 
   const handleEdit = (field, value) => {
     if (taskData[field] != value) {
       updateTask({ ...taskData, [field]: value });
+      patchTask(task, taskData, field, value);
     }
   };
 
   return (
     <Card
+      ref={setNodeRef}
+      style={{
+        ...style,
+        cursor: isDragging ? "grabbing" : "default",
+        position: "relative",
+      }}
       key={task.id}
       size="small"
       title={
@@ -35,16 +73,32 @@ export default function ListCard({ task, refreshTasks }) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "15px",
             width: "100%",
+            gap: "15px",
+            margin: 0,
           }}
         >
+          <Button
+            {...listeners}
+            {...attributes}
+            style={{
+              cursor: "grab",
+              fontWeight: "bold",
+              userSelect: "none",
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            type="text"
+            icon={<MenuOutlined />}
+          />
+
           <Checkbox
             checked={taskData.completed}
-            onClick={(ev) => {
+            onChange={(ev) => {
+              ev.stopPropagation();
               handleEdit("completed", ev.target.checked);
             }}
-          ></Checkbox>
+          />
+
           <Paragraph
             style={{
               margin: 0,
@@ -53,15 +107,14 @@ export default function ListCard({ task, refreshTasks }) {
               textOverflow: "ellipsis",
             }}
             editable={{
-              onChange: (ev) => {
-                handleEdit("title", ev);
-              },
+              onChange: (ev) => handleEdit("title", ev),
               triggerType: "text",
             }}
           >
             {taskData.title}
           </Paragraph>
-          <DeleteTaskButton taskID={task.id} refreshTasks={refreshTasks} />
+
+          <DeleteTaskButton task={task} />
         </div>
       }
     >
@@ -75,9 +128,7 @@ export default function ListCard({ task, refreshTasks }) {
           textWrap: "wrap",
         }}
         editable={{
-          onChange: (ev) => {
-            handleEdit("description", ev);
-          },
+          onChange: (ev) => handleEdit("description", ev),
           triggerType: "text",
         }}
       >

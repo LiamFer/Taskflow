@@ -1,16 +1,18 @@
-import { EllipsisOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Dropdown } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Button, Popconfirm } from "antd";
 import useNotify from "../../../Context/notificationContext";
 import { deleteTask } from "../../../Services/boardService";
+import { useBoardData } from "../../../Context/boardContext";
 
-export default function DeleteTaskButton({ taskID, refreshTasks }) {
+export default function DeleteTaskButton({ task }) {
   const { notify } = useNotify();
+  const { removeTask } = useBoardData();
 
   const handleDelete = () => {
-    deleteTask(taskID)
+    deleteTask(task.id)
       .then((response) => {
         notify("success", "All done!", "Everything went smoothly.");
-        refreshTasks();
+        removeTask(task);
       })
       .catch((err) => {
         notify(
@@ -21,27 +23,16 @@ export default function DeleteTaskButton({ taskID, refreshTasks }) {
       });
   };
 
-  const items = [
-    {
-      key: "1",
-      label: (
-        <Popconfirm
-          title="Delete this Task"
-          description="Are you sure to delete this Task?"
-          onConfirm={handleDelete}
-          onCancel={() => {}}
-          okText="Yes"
-          cancelText="No"
-        >
-          <a onClick={() => {}}>Delete Task</a>
-        </Popconfirm>
-      ),
-    },
-  ];
-
   return (
-    <Dropdown menu={{ items }} placement="bottomLeft">
-      <Button type="text" icon={<EllipsisOutlined />} />
-    </Dropdown>
+    <Popconfirm
+      title="Delete this Task"
+      description="Are you sure to delete this Task?"
+      onConfirm={handleDelete}
+      onCancel={() => {}}
+      okText="Yes"
+      cancelText="No"
+    >
+      <Button type="text" icon={<DeleteOutlined />} />
+    </Popconfirm>
   );
 }
