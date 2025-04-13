@@ -14,15 +14,15 @@ import { useBoardData } from "../../../Context/boardContext";
 import ListCard from "../ListCard/ListCard";
 import styles from "./boardtab.module.css";
 
-export default function BoardTab({ boardID }) {
-  const { boardData, fetchBoard, moveTaskToList, getTask } = useBoardData();
+export default function BoardTab({ ID }) {
+  const { boardData, fetchBoard, moveTaskToList, getTask,boardID } = useBoardData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [activeDragTask, setActiveDragTask] = useState(null);
 
   useEffect(() => {
-    fetchBoard();
-  }, [boardID]);
+    fetchBoard(ID);
+  }, [ID]);
 
   function handleDragStart(event) {
     const taskId = event.active.id;
@@ -138,7 +138,6 @@ export default function BoardTab({ boardID }) {
       <CreateList
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
-        boardID={boardID}
       />
     </div>
   );

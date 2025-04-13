@@ -7,9 +7,9 @@ import { useBoardData } from "../../Context/boardContext";
 export default function Boards() {
   const { boardID } = useParams();
   const navigate = useNavigate();
-  const { userBoards, setboardID, getBoardInfo, getBoardMembers } =
-    useBoardData();
+  const { userBoards, setboardID, getBoardInfo } = useBoardData();
   const [boardInfo, setBoardInfo] = useState();
+
 
   useEffect(() => {
     setboardID(boardID);
@@ -30,7 +30,7 @@ export default function Boards() {
     >
       <BoardHeader boardInfo={boardInfo} />
       <div style={{ flex: 1, minHeight: 0 }}>
-        <BoardTab boardID={boardInfo?.id} />
+        <BoardTab ID={boardInfo?.id} />
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ export default function BoardList({ list }) {
   const [tasks, setTasks] = useState(list.tasks);
   const { token } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { updateList, fetchBoard } = useBoardData();
+  const { updateList, fetchBoard,boardID } = useBoardData();
   const [isListComplete, setIsListComplete] = useState(false);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function BoardList({ list }) {
       })
     );
     setIsListComplete((prev) => !prev);
-    fetchBoard();
+    fetchBoard(boardID);
   }
 
   return (

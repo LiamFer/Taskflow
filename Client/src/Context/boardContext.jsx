@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   createBoard,
   deleteBoard,
@@ -19,8 +19,8 @@ export const BoardProvider = ({ children }) => {
   const [boardMembers, setBoardMembers] = useState([]);
   const [boardID, setboardID] = useState();
 
-  function fetchBoard() {
-    getLists(boardID).then((response) => {
+  function fetchBoard(id) {
+    getLists(id).then((response) => {
       const lists = response.data.data;
       Promise.all(
         lists.map(async (list) => {
@@ -33,6 +33,7 @@ export const BoardProvider = ({ children }) => {
           };
         })
       ).then((listsWithTasks) => {
+        console.log(listsWithTasks);
         setBoardData(listsWithTasks);
       });
     });
@@ -164,7 +165,6 @@ export const BoardProvider = ({ children }) => {
 
   function getBoardMembers() {
     return getMembers(boardID).then((res) => {
-      console.log(res.data.data);
       setBoardMembers(res.data.data);
     });
   }
