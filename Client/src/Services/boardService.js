@@ -19,3 +19,14 @@ export const moveTask = (taskID,data) => api.patch(`/tasks/${taskID}/move`,data)
 export const createBoard = (data) => api.post(`/boards`,data)
 export const editBoard = (boardID,data) => api.put(`/boards/${boardID}`,data)
 export const deleteBoard = (boardID) => api.delete(`/boards/${boardID}`)
+
+
+export const getMembers = (boardID) => api.get(`/boards/${boardID}/members`)
+export const inviteMember = (boardID,data) => api.post(`/boards/${boardID}/invite`,data)
+export const removeMember = (boardID,email) => api.delete(`/boards/${boardID}/members/${email}`)
+export const searchUsers = (username) =>
+  api.get('/user/search', {
+    params: {
+      query: username,
+    },
+  });

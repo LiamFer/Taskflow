@@ -182,7 +182,6 @@ export class BoardController {
       if (!email) throw new BadRequestException();
       const user: user | null = await this.userService.findByEmail(email);
       if (!user) throw new NotFoundException();
-
       await this.boardService.inviteMember(boardId, user);
 
       return ResponseUtil.sendResponse(

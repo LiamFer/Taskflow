@@ -6,6 +6,7 @@ import {
   editList,
   getBoards,
   getLists,
+  getMembers,
   getTasks,
   moveTask,
 } from "../Services/boardService";
@@ -15,6 +16,7 @@ export const boardContext = createContext();
 export const BoardProvider = ({ children }) => {
   const [boardData, setBoardData] = useState([]);
   const [userBoards, setUserBoards] = useState([]);
+  const [boardMembers, setBoardMembers] = useState([]);
   const [boardID, setboardID] = useState();
 
   function fetchBoard() {
@@ -160,11 +162,20 @@ export const BoardProvider = ({ children }) => {
     );
   }
 
+  function getBoardMembers() {
+    return getMembers(boardID).then((res) => {
+      console.log(res.data.data);
+      setBoardMembers(res.data.data);
+    });
+  }
+
   return (
     <boardContext.Provider
       value={{
         boardData,
         userBoards,
+        boardMembers,
+        boardID,
         fetchUserBoards,
         setBoardData,
         fetchBoard,
@@ -179,6 +190,7 @@ export const BoardProvider = ({ children }) => {
         addBoard,
         removeBoard,
         updateList,
+        getBoardMembers,
       }}
     >
       {children}

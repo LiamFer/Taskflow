@@ -7,12 +7,16 @@ import {
   Post,
   Res,
   Req,
+  UseGuards,
+  Param,
+  Query,
 } from '@nestjs/common';
 import { UserService, validationResponse } from './user.service';
 import { Response, Request } from 'express';
 import { ResponseUtil } from 'src/utils/response';
 import { AuthService } from '../Auth/auth.service';
 import { user } from 'src/interfaces/userInterface';
+import { AuthGuard } from 'src/middleware/auth.guard';
 
 // USER ROUTE
 @Controller('user')
@@ -138,10 +142,31 @@ export class UserController {
   ): Promise<object> {
     // Endpoint pra logout
     res.clearCookie('jwt');
-    return ResponseUtil.sendResponse(
-      res,
-      HttpStatus.UNAUTHORIZED,
-      'Log out!',
-    );
+    return ResponseUtil.sendResponse(res, HttpStatus.UNAUTHORIZED, 'Log out!');
+  }
+
+  @Get('search')
+  @UseGuards(AuthGuard)
+  async Users(
+    @Query('query') query,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<object> {
+    try {
+      // Pegando o Usuário que está requisitando os Boards
+      const users = await this.userService.getUsersInfo(query);
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.OK,
+        'Data Retrieved Successfully!',
+        users,
+      );
+    } catch (error) {
+      return ResponseUtil.sendResponse(
+        res,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Internal Server Error',
+      );
+    }
   }
 }

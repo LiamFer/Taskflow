@@ -47,13 +47,14 @@ export class UserService {
         user.password,
         queryUser.password,
       );
-      return authentication ? queryUser : null
+      return authentication ? queryUser : null;
     }
   }
 
   async validateRegister(user: user): Promise<validationResponse> {
     // Verificando se o email já está sendo utilizado
-    if (await this.findByEmail(user.email)) return { state: false, reason: 'Email já está sendo utilizado' }
+    if (await this.findByEmail(user.email))
+      return { state: false, reason: 'Email já está sendo utilizado' };
 
     // Usando Zod pra verificar se todos os campos estão de acordo com as validações
     const userSchema = z.object({
@@ -73,5 +74,17 @@ export class UserService {
       // Retornando o primeiro campo que não é válido
       return { state: false, reason: e.errors[0].message };
     }
+  }
+
+  async getUsersInfo(query: string): Promise<user[]> {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.name', 'user.email'])
+      .where('LOWER(user.name) LIKE :query OR LOWER(user.email) LIKE :query', {
+        query: `%${query.toLowerCase()}%`,
+      })
+      .orderBy('user.name', 'ASC')
+      .limit(5)
+      .getMany();
   }
 }
