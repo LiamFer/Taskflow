@@ -13,10 +13,13 @@ import { FileAddOutlined, SunOutlined, MoonOutlined } from "@ant-design/icons";
 import { themeContext } from "../../Context/themeContext";
 import { NotificationProvider } from "../../Context/notificationContext";
 import { BoardProvider } from "../../Context/boardContext";
+import CreateBoard from "../../Components/Popups/CreateBoard";
 
 const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openCreateBoard, setOpenCreateBoard] = useState(false);
+
   const { darkMode, setDarkMode } = useContext(themeContext);
 
   const { token } = theme.useToken();
@@ -70,7 +73,7 @@ const Home = () => {
               </Content>
 
               <Footer style={{ textAlign: "center" }}>
-                Taskflow ©{new Date().getFullYear()} Gauss
+                Taskflow ©{new Date().getFullYear()} Liam
               </Footer>
             </Layout>
 
@@ -84,10 +87,11 @@ const Home = () => {
                 tooltip="Change Theme"
                 onClick={() => setDarkMode((prev) => !prev)}
               />
-              <FloatButton tooltip="New Board" icon={<FileAddOutlined />} />
+              <FloatButton tooltip="New Board" icon={<FileAddOutlined />} onClick={()=> setOpenCreateBoard(true)} />
             </FloatButton.Group>
 
             <ConfigPanel open={open} setOpen={setOpen} />
+            <CreateBoard open={openCreateBoard} setOpen={setOpenCreateBoard}/>
           </Layout>
         </AuthRoute>
       </BoardProvider>

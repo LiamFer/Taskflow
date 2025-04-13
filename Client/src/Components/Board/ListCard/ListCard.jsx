@@ -23,6 +23,7 @@ export default function ListCard({ task }) {
         zIndex: 9999,
         width: "250px",
         pointerEvents: "none",
+        opacity: 0.5,
       }
     : undefined;
 

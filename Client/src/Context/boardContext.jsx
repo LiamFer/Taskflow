@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import {
+  createBoard,
   deleteBoard,
   editBoard,
   getBoards,
@@ -56,8 +57,17 @@ export const BoardProvider = ({ children }) => {
     });
   }
 
+  function addBoard(data) {
+    return createBoard(data).then((res) => {
+      setUserBoards([...userBoards, res.data.data]);
+      return res.data.data.id;
+    });
+  }
+
   function removeBoard(id) {
-    return deleteBoard(id).then(() => setUserBoards(userBoards.filter((board) => board.id != id)))
+    return deleteBoard(id).then(() =>
+      setUserBoards(userBoards.filter((board) => board.id != id))
+    );
   }
 
   function getTask(id) {
@@ -152,6 +162,7 @@ export const BoardProvider = ({ children }) => {
         removeTask,
         getBoardInfo,
         updateBoardInfo,
+        addBoard,
         removeBoard,
       }}
     >

@@ -24,7 +24,7 @@ export default function BoardList({ list }) {
         display: "flex",
         flexDirection: "column",
         minWidth: 250,
-        maxWidth: 300,
+        maxWidth: 250,
         gap: "20px",
         flex: 1,
         minHeight: 0,

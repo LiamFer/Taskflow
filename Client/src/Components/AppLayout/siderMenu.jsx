@@ -14,12 +14,13 @@ import { getBoards } from "../../Services/boardService";
 import { useBoardData } from "../../Context/boardContext";
 
 // Função que cria cada item do menu
-function getItem(label, key, icon, children) {
+function getItem(label, key, icon, children, disabled) {
   return {
     key,
     icon,
     children,
     label,
+    disabled,
   };
 }
 
@@ -37,11 +38,11 @@ function findLabelByKey(items, key) {
 export default function SiderMenu() {
   const navigate = useNavigate();
   const location = useLocation();
-  const {userBoards, fetchUserBoards} = useBoardData();
+  const { userBoards, fetchUserBoards } = useBoardData();
   const [selectedKey, setSelectedKey] = useState(location.pathname);
 
   useEffect(() => {
-    fetchUserBoards()
+    fetchUserBoards();
   }, []);
 
   useEffect(() => {
@@ -60,11 +61,13 @@ export default function SiderMenu() {
       "Boards",
       "/home/boards",
       <AppstoreOutlined />,
-      userBoards.map((board) => getItem(board.title, `/home/boards/${board.id}`))
+      userBoards.map((board) =>
+        getItem(board.title, `/home/boards/${board.id}`)
+      )
     ),
-    getItem("My Tasks", "/my-tasks", <CheckSquareOutlined />),
-    getItem("Archived", "/archived", <InboxOutlined />),
-    getItem("Teams", "/teams", <TeamOutlined />),
+    getItem("My Tasks", "/my-tasks", <CheckSquareOutlined />, null, true),
+    getItem("Archived", "/archived", <InboxOutlined />, null, true),
+    getItem("Teams", "/teams", <TeamOutlined />, null, true),
   ];
   return (
     <Menu
