@@ -8,7 +8,7 @@ import { useBoardData } from "../../Context/boardContext";
 export default function Boards() {
   const { boardID } = useParams();
   const navigate = useNavigate();
-  const { fetchBoard, setboardID } = useBoardData();
+  const { setboardID } = useBoardData();
   const [boardInfo, setBoardInfo] = useState();
 
   useEffect(() => {

@@ -56,7 +56,7 @@ export const BoardProvider = ({ children }) => {
     moveTask(task.id, { listId: targetListId });
   }
 
-  function patchTask(task,taskData,field,value) {
+  function patchTask(task, taskData, field, value) {
     setBoardData((prev) =>
       prev.map((list) => {
         return {
@@ -72,6 +72,36 @@ export const BoardProvider = ({ children }) => {
     );
   }
 
+  function addTask(data) {
+    const { id, title, description, completed } = data;
+    const newTask = {
+      id,
+      title,
+      description,
+      completed,
+      listid: data.list.id,
+    };
+    setBoardData(
+      boardData.map((list) => {
+        if (list.id == newTask.listid) {
+          return { ...list, tasks: [...list.tasks, newTask] };
+        }
+        return list;
+      })
+    );
+  }
+
+  function removeTask(task) {
+    setBoardData(
+      boardData.map((list) => {
+        if (list.id == task.listid) {
+          return { ...list, tasks: list.tasks.filter(t => t.id != task.id) };
+        }
+        return list;
+      })
+    );
+  }
+
   return (
     <boardContext.Provider
       value={{
@@ -82,6 +112,8 @@ export const BoardProvider = ({ children }) => {
         moveTaskToList,
         getTask,
         patchTask,
+        addTask,
+        removeTask,
       }}
     >
       {children}

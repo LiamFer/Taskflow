@@ -20,7 +20,7 @@ export default function ListCard({ task }) {
         transform: `translate(${transform.x}px, ${transform.y}px)`,
         position: "fixed",
         zIndex: 9999,
-        width: "250px", // você pode ajustar conforme o layout
+        width: "250px",
         pointerEvents: "none",
       }
     : undefined;
@@ -52,7 +52,6 @@ export default function ListCard({ task }) {
       style={{
         ...style,
         cursor: isDragging ? "grabbing" : "default",
-        boxShadow: isDragging ? "0 4px 12px rgba(0,0,0,0.15)" : undefined,
         position: "relative",
       }}
       key={task.id}
@@ -103,7 +102,7 @@ export default function ListCard({ task }) {
             {taskData.title}
           </Paragraph>
 
-          <DeleteTaskButton taskID={task.id} />
+          <DeleteTaskButton task={task} />
         </div>
       }
     >

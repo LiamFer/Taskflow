@@ -4,15 +4,15 @@ import useNotify from "../../../Context/notificationContext";
 import { deleteTask } from "../../../Services/boardService";
 import { useBoardData } from "../../../Context/boardContext";
 
-export default function DeleteTaskButton({ taskID }) {
+export default function DeleteTaskButton({ task }) {
   const { notify } = useNotify();
-  const { fetchBoard } = useBoardData();
+  const { removeTask } = useBoardData();
 
   const handleDelete = () => {
-    deleteTask(taskID)
+    deleteTask(task.id)
       .then((response) => {
         notify("success", "All done!", "Everything went smoothly.");
-        fetchBoard();
+        removeTask(task);
       })
       .catch((err) => {
         notify(

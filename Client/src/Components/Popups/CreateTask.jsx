@@ -6,16 +6,16 @@ import { useBoardData } from "../../Context/boardContext";
 export default function CreateTask({ isModalOpen, setIsModalOpen, listID }) {
   const [form] = Form.useForm();
   const { notify } = useNotify();
-  const {fetchBoard} = useBoardData()
+  const { addTask } = useBoardData();
 
   const handleOk = () => {
     form
       .validateFields()
       .then((values) => {
         createTask(listID, values)
-          .then(() => {
+          .then((response) => {
             notify("success", "Done", "Task created successfully!");
-            fetchBoard();
+            addTask(response.data.data);
             form.resetFields();
             setIsModalOpen(false);
           })

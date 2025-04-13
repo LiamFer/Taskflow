@@ -30,7 +30,6 @@ export default function BoardList({ list }) {
         minHeight: 0,
       }}
     >
-      {/* Header fixo */}
       <div
         className={styles.listHeader}
         style={{
@@ -49,16 +48,15 @@ export default function BoardList({ list }) {
         </div>
       </div>
 
-      {/* Scroll vertical aqui */}
       <div
         ref={setNodeRef}
         className={styles.scrollArea}
         style={{
           flex: 1,
-          minHeight: 0, // <- ESSENCIAL para scroll funcionar corretamente
+          minHeight: 0,
           overflowY: "auto",
-          overflowX: "hidden", // ✅ Adiciona essa linha
-          paddingRight: 8,
+          overflowX: "hidden", 
+          paddingBottom: "5px",
           display: "flex",
           flexDirection: "column",
           gap: 12,
@@ -69,7 +67,6 @@ export default function BoardList({ list }) {
         ))}
       </div>
 
-      {/* Modal */}
       <CreateTask
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
