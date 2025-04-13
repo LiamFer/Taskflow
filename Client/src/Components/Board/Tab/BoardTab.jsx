@@ -116,6 +116,7 @@ export default function BoardTab({ boardID }) {
             overflowY: "hidden",
             flexGrow: 1,
             flex: 1,
+
           }}
         >
           <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>

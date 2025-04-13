@@ -7,11 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function CreateBoard({ open, setOpen }) {
-  const [title,setTitle] = useState("")
+  const [title, setTitle] = useState("");
   const [form] = Form.useForm();
   const { notify } = useNotify();
   const { addBoard } = useBoardData();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleOk = () => {
     form
@@ -21,7 +21,7 @@ export default function CreateBoard({ open, setOpen }) {
           .then((response) => {
             notify("success", "Done", "Board created successfully!");
             form.resetFields();
-            navigate(`/home/boards/${response}`)
+            navigate(`/home/boards/${response}`);
             setOpen(false);
           })
           .catch(() => {
@@ -35,7 +35,7 @@ export default function CreateBoard({ open, setOpen }) {
 
   const handleCancel = () => {
     form.resetFields();
-    setTitle("")
+    setTitle("");
     setOpen(false);
   };
 
@@ -51,7 +51,7 @@ export default function CreateBoard({ open, setOpen }) {
               minWidth: "40px",
             }}
           >
-            {title.substring(0,4)}
+            {title.substring(0, 4)}
           </Avatar>
           <h1 style={{ margin: 0 }}>New Board</h1>
         </div>
@@ -66,9 +66,15 @@ export default function CreateBoard({ open, setOpen }) {
         <Form.Item
           label="Board Name"
           name="title"
-          rules={[{ required: true, message: "Please enter a Board name." }]}
+          rules={[
+            { required: true, message: "Please enter a Board name." },
+            { min: 6, message: "Board name must be at least 6 characters." },
+          ]}
         >
-          <Input placeholder="e.g. To Do" onChange={(ev) => setTitle(ev.target.value)} />
+          <Input
+            placeholder="e.g. To Do"
+            onChange={(ev) => setTitle(ev.target.value)}
+          />
         </Form.Item>
         <Form.Item
           label="Board Description"

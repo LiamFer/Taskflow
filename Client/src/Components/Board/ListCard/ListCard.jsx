@@ -1,5 +1,5 @@
 import { Checkbox, theme, Card, Typography, Button } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { editTask } from "../../../Services/boardService";
 import useNotify from "../../../Context/notificationContext";
 import DeleteTaskButton from "./DeleteTaskButton";
@@ -35,9 +35,19 @@ export default function ListCard({ task }) {
     completed: task.completed,
   });
 
+  useEffect(() => {
+    setTaskData({
+      title: task.title,
+      description: task.description,
+      completed: task.completed,
+    });
+  }, [task]);
+
   const updateTask = (data) => {
     editTask(task.id, data)
-      .then(() => setTaskData(data))
+      .then(() => {
+        setTaskData(data);
+      })
       .catch(() => notify("error", "Error", "Failed to edit the task."));
   };
 

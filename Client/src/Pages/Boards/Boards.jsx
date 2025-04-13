@@ -18,9 +18,9 @@ export default function Boards() {
   }, [boardID,userBoards]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%",paddingTop:10 }}>
       <BoardHeader boardInfo={boardInfo}/>
-      <div style={{ flex: 1, minHeight: 0 }}>
+      <div style={{ flex: 1, minHeight: 0}}>
         <BoardTab boardID={boardInfo?.id} />
       </div>
     </div>

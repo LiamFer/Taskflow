@@ -3,6 +3,7 @@ import {
   createBoard,
   deleteBoard,
   editBoard,
+  editList,
   getBoards,
   getLists,
   getTasks,
@@ -67,6 +68,19 @@ export const BoardProvider = ({ children }) => {
   function removeBoard(id) {
     return deleteBoard(id).then(() =>
       setUserBoards(userBoards.filter((board) => board.id != id))
+    );
+  }
+
+  function updateList(id, data) {
+    return editList(id, data).then((res) =>
+      setBoardData(
+        boardData.map((list) => {
+          if (list.id == id) {
+            return { ...list, title: data.title };
+          }
+          return list;
+        })
+      )
     );
   }
 
@@ -164,6 +178,7 @@ export const BoardProvider = ({ children }) => {
         updateBoardInfo,
         addBoard,
         removeBoard,
+        updateList,
       }}
     >
       {children}
