@@ -23,13 +23,7 @@ export default function Boards() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <BoardHeader boardInfo={boardInfo} />
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "10px",
-        }}
-      >
+      <div style={{ flex: 1, minHeight: 0 }}>
         <BoardTab boardID={boardInfo?.id} />
       </div>
     </div>

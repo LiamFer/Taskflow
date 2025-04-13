@@ -56,9 +56,33 @@ export const BoardProvider = ({ children }) => {
     moveTask(task.id, { listId: targetListId });
   }
 
+  function patchTask(task,taskData,field,value) {
+    setBoardData((prev) =>
+      prev.map((list) => {
+        return {
+          ...list,
+          tasks: list.tasks.map((t) => {
+            if (t.id == task.id) {
+              return { ...t, ...taskData, [field]: value };
+            }
+            return t;
+          }),
+        };
+      })
+    );
+  }
+
   return (
     <boardContext.Provider
-      value={{ boardData, setBoardData, fetchBoard, setboardID, moveTaskToList,getTask }}
+      value={{
+        boardData,
+        setBoardData,
+        fetchBoard,
+        setboardID,
+        moveTaskToList,
+        getTask,
+        patchTask,
+      }}
     >
       {children}
     </boardContext.Provider>

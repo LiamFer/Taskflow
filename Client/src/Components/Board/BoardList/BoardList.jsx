@@ -25,15 +25,17 @@ export default function BoardList({ list }) {
         flexDirection: "column",
         minWidth: 250,
         maxWidth: 300,
-        flexGrow: 1,
-        minHeight: "80vh",
-        gap: 20,
+        gap: "20px",
+        flex: 1,
+        minHeight: 0,
       }}
     >
+      {/* Header fixo */}
       <div
         className={styles.listHeader}
         style={{
           backgroundColor: token.colorBgContainerDisabled,
+          flexShrink: 0,
         }}
       >
         <Checkbox>{list?.title}</Checkbox>
@@ -47,13 +49,19 @@ export default function BoardList({ list }) {
         </div>
       </div>
 
+      {/* Scroll vertical aqui */}
       <div
         ref={setNodeRef}
+        className={styles.scrollArea}
         style={{
+          flex: 1,
+          minHeight: 0, // <- ESSENCIAL para scroll funcionar corretamente
+          overflowY: "auto",
+          overflowX: "hidden", // ✅ Adiciona essa linha
+          paddingRight: 8,
           display: "flex",
           flexDirection: "column",
           gap: 12,
-          height: "100%",
         }}
       >
         {tasks.map((task) => (
@@ -61,6 +69,7 @@ export default function BoardList({ list }) {
         ))}
       </div>
 
+      {/* Modal */}
       <CreateTask
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}

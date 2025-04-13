@@ -51,7 +51,16 @@ const Home = () => {
           <Layout>
             <AppHeader token={token} user={user} />
 
-            <Content style={{ margin: "0px 16px" }}>
+            <Content
+              style={{
+                margin: "0px 16px",
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                minHeight: 0,
+                overflow: "hidden",
+              }}
+            >
               <BoardProvider>
                 <Outlet />
               </BoardProvider>

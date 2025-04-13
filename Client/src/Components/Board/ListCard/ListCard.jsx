@@ -5,17 +5,24 @@ import useNotify from "../../../Context/notificationContext";
 import DeleteTaskButton from "./DeleteTaskButton";
 import { useDraggable } from "@dnd-kit/core";
 import { useBoardData } from "../../../Context/boardContext";
+
 const { Paragraph } = Typography;
 
 export default function ListCard({ task }) {
-  const { setBoardData } = useBoardData();
-
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task.id,
-  });
+  const { patchTask } = useBoardData();
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+    });
 
   const style = transform
-    ? { transform: `translate(${transform.x}px,${transform.y}px)` }
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+        position: "fixed",
+        zIndex: 9999,
+        width: "250px", // você pode ajustar conforme o layout
+        pointerEvents: "none",
+      }
     : undefined;
 
   const { token } = theme.useToken();
@@ -35,26 +42,19 @@ export default function ListCard({ task }) {
   const handleEdit = (field, value) => {
     if (taskData[field] != value) {
       updateTask({ ...taskData, [field]: value });
-      setBoardData((prev) =>
-        prev.map((list) => {
-          return {
-            ...list,
-            tasks: list.tasks.map((t) => {
-              if (t.id == task.id) {
-                return {...t,...taskData,[field]: value }
-              }
-              return t;
-            }),
-          };
-        })
-      );
+      patchTask(task, taskData, field, value);
     }
   };
 
   return (
     <Card
       ref={setNodeRef}
-      style={{ ...style, cursor: "default" }}
+      style={{
+        ...style,
+        cursor: isDragging ? "grabbing" : "default",
+        boxShadow: isDragging ? "0 4px 12px rgba(0,0,0,0.15)" : undefined,
+        position: "relative",
+      }}
       key={task.id}
       size="small"
       title={
@@ -75,7 +75,7 @@ export default function ListCard({ task }) {
               fontWeight: "bold",
               userSelect: "none",
             }}
-            onMouseDown={(e) => e.stopPropagation()} // impede interferência
+            onMouseDown={(e) => e.stopPropagation()}
           >
             ☰
           </div>
