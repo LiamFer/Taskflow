@@ -1,12 +1,40 @@
 import {
   UserAddOutlined,
   UserOutlined,
-  AntDesignOutlined,
+  AntDesignOutlined,DeleteOutlined
 } from "@ant-design/icons";
-import { Button, Avatar, Tooltip } from "antd";
+import { Button, Avatar, Tooltip, Typography } from "antd";
 import stringToColor from "../../utils/stringToColor";
+import useNotify from "../../Context/notificationContext";
+import { useBoardData } from "../../Context/boardContext";
+import DeleteBoard from './DeleteBoard';
 
 export default function BoardHeader({ boardInfo }) {
+  const { notify } = useNotify();
+  const { updateBoardInfo } = useBoardData();
+
+  function changeBoardTitle(newTitle) {
+    if (newTitle == boardInfo.title) return;
+    if (newTitle.length >= 6) {
+      updateBoardInfo(boardInfo.id, {
+        title: newTitle,
+        description: boardInfo.description,
+      })
+        .then(() =>
+          notify("success", "Board Edited!", "Everything went smoothly.")
+        )
+        .catch(() =>
+          notify(
+            "error",
+            "Oops!",
+            "Something didn't go as planned. Please refresh the page or try again."
+          )
+        );
+    } else {
+      notify("warning", "Oops!", "The title must be least 6 characters long!");
+    }
+  }
+
   return (
     /* Titulo e Icone do Board*/
     <div
@@ -21,6 +49,10 @@ export default function BoardHeader({ boardInfo }) {
           display: "flex",
           alignItems: "center",
           gap: "20px",
+          padding: "10px",
+          flexGrow: 1,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}
       >
         <Avatar
@@ -30,11 +62,28 @@ export default function BoardHeader({ boardInfo }) {
             backgroundColor: stringToColor(boardInfo?.title || "Board"),
             color: "white",
             boxShadow: "rgba(2, 2, 2, 0.2) 2px 2px 5px",
+            minWidth: "40px",
           }}
         >
           {boardInfo?.title.substr(0, 4)}
         </Avatar>
-        <h1>{boardInfo?.title}</h1>
+
+        <Typography.Title
+          level={1}
+          style={{
+            flexGrow: "1",
+            margin: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+          editable={{
+            onChange: (newTitle) => changeBoardTitle(newTitle),
+            triggerType: "text",
+          }}
+        >
+          {boardInfo?.title}
+        </Typography.Title>
       </div>
       {/* Componente de Membros do board e Invite */}
       <div style={{ display: "flex", gap: "10px" }}>
@@ -58,6 +107,7 @@ export default function BoardHeader({ boardInfo }) {
           />
         </Avatar.Group>
         <Button icon={<UserAddOutlined />}>Invite</Button>
+        <DeleteBoard/>
       </div>
     </div>
   );

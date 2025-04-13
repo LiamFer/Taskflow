@@ -1,10 +1,17 @@
 import { createContext, useContext, useState } from "react";
-import { getLists, getTasks, moveTask } from "../Services/boardService";
+import {
+  editBoard,
+  getBoards,
+  getLists,
+  getTasks,
+  moveTask,
+} from "../Services/boardService";
 
 export const boardContext = createContext();
 
 export const BoardProvider = ({ children }) => {
   const [boardData, setBoardData] = useState([]);
+  const [userBoards, setUserBoards] = useState([]);
   const [boardID, setboardID] = useState();
 
   function fetchBoard() {
@@ -23,6 +30,28 @@ export const BoardProvider = ({ children }) => {
       ).then((listsWithTasks) => {
         setBoardData(listsWithTasks);
       });
+    });
+  }
+
+  function fetchUserBoards() {
+    getBoards().then((response) => setUserBoards(response.data.data));
+  }
+
+  function getBoardInfo(id) {
+    return userBoards.find((board) => board.id == id);
+  }
+
+  function updateBoardInfo(id, data) {
+    return editBoard(id, data).then((res) => {
+      const editedBoard = res.data.data;
+      setUserBoards(
+        userBoards.map((board) => {
+          if (board.id == editedBoard.id) {
+            return editedBoard;
+          }
+          return board;
+        })
+      );
     });
   }
 
@@ -95,7 +124,7 @@ export const BoardProvider = ({ children }) => {
     setBoardData(
       boardData.map((list) => {
         if (list.id == task.listid) {
-          return { ...list, tasks: list.tasks.filter(t => t.id != task.id) };
+          return { ...list, tasks: list.tasks.filter((t) => t.id != task.id) };
         }
         return list;
       })
@@ -106,6 +135,8 @@ export const BoardProvider = ({ children }) => {
     <boardContext.Provider
       value={{
         boardData,
+        userBoards,
+        fetchUserBoards,
         setBoardData,
         fetchBoard,
         setboardID,
@@ -114,6 +145,8 @@ export const BoardProvider = ({ children }) => {
         patchTask,
         addTask,
         removeTask,
+        getBoardInfo,
+        updateBoardInfo,
       }}
     >
       {children}

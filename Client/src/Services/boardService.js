@@ -14,3 +14,5 @@ export const editTask = (taskID,data) => api.put(`/tasks/${taskID}`,data)
 export const deleteTask = (taskID) => api.delete(`/tasks/${taskID}`)
 export const moveTask = (taskID,data) => api.patch(`/tasks/${taskID}/move`,data)
 
+export const editBoard = (boardID,data) => api.put(`/boards/${boardID}`,data)
+export const deleteBoard = (boardID) => api.delete(`/boards/${boardID}`)

@@ -1,10 +1,11 @@
-import { Checkbox, theme, Card, Typography } from "antd";
+import { Checkbox, theme, Card, Typography, Button } from "antd";
 import { useState } from "react";
 import { editTask } from "../../../Services/boardService";
 import useNotify from "../../../Context/notificationContext";
 import DeleteTaskButton from "./DeleteTaskButton";
 import { useDraggable } from "@dnd-kit/core";
 import { useBoardData } from "../../../Context/boardContext";
+import { MenuOutlined } from "@ant-design/icons";
 
 const { Paragraph } = Typography;
 
@@ -61,23 +62,23 @@ export default function ListCard({ task }) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "15px",
             width: "100%",
+            gap: "15px",
+            margin: 0,
           }}
         >
-          <div
+          <Button
             {...listeners}
             {...attributes}
             style={{
               cursor: "grab",
-              padding: "0 4px",
               fontWeight: "bold",
               userSelect: "none",
             }}
             onMouseDown={(e) => e.stopPropagation()}
-          >
-            ☰
-          </div>
+            type="text"
+            icon={<MenuOutlined />}
+          />
 
           <Checkbox
             checked={taskData.completed}

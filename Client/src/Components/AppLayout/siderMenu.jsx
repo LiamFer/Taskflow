@@ -11,6 +11,7 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { getBoards } from "../../Services/boardService";
+import { useBoardData } from "../../Context/boardContext";
 
 // Função que cria cada item do menu
 function getItem(label, key, icon, children) {
@@ -36,11 +37,11 @@ function findLabelByKey(items, key) {
 export default function SiderMenu() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [userBoards, setUserBoards] = useState([]);
+  const {userBoards, fetchUserBoards} = useBoardData();
   const [selectedKey, setSelectedKey] = useState(location.pathname);
 
   useEffect(() => {
-    getBoards().then((response) => setUserBoards(response.data.data));
+    fetchUserBoards()
   }, []);
 
   useEffect(() => {
