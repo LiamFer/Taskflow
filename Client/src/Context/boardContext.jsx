@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import {
+  deleteBoard,
   editBoard,
   getBoards,
   getLists,
@@ -53,6 +54,10 @@ export const BoardProvider = ({ children }) => {
         })
       );
     });
+  }
+
+  function removeBoard(id) {
+    return deleteBoard(id).then(() => setUserBoards(userBoards.filter((board) => board.id != id)))
   }
 
   function getTask(id) {
@@ -147,6 +152,7 @@ export const BoardProvider = ({ children }) => {
         removeTask,
         getBoardInfo,
         updateBoardInfo,
+        removeBoard,
       }}
     >
       {children}

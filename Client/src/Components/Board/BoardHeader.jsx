@@ -1,13 +1,14 @@
 import {
   UserAddOutlined,
   UserOutlined,
-  AntDesignOutlined,DeleteOutlined
+  AntDesignOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { Button, Avatar, Tooltip, Typography } from "antd";
 import stringToColor from "../../utils/stringToColor";
 import useNotify from "../../Context/notificationContext";
 import { useBoardData } from "../../Context/boardContext";
-import DeleteBoard from './DeleteBoard';
+import DeleteBoard from "./DeleteBoard";
 
 export default function BoardHeader({ boardInfo }) {
   const { notify } = useNotify();
@@ -42,6 +43,7 @@ export default function BoardHeader({ boardInfo }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        maxHeight: "60px",
       }}
     >
       <div
@@ -107,7 +109,7 @@ export default function BoardHeader({ boardInfo }) {
           />
         </Avatar.Group>
         <Button icon={<UserAddOutlined />}>Invite</Button>
-        <DeleteBoard/>
+        <DeleteBoard boardInfo={boardInfo} />
       </div>
     </div>
   );
