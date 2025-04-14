@@ -13,9 +13,12 @@ import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { useBoardData } from "../../../Context/boardContext";
 import ListCard from "../ListCard/ListCard";
 import styles from "./boardtab.module.css";
+import socket from "../../../Services/websocket";
+import { getMembers } from "../../../Services/boardService";
 
 export default function BoardTab({ ID }) {
-  const { boardData, fetchBoard, moveTaskToList, getTask,boardID } = useBoardData();
+  const { boardData, fetchBoard, moveTaskToList, getTask, patchMoveTask } =
+    useBoardData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [activeDragTask, setActiveDragTask] = useState(null);
@@ -23,6 +26,31 @@ export default function BoardTab({ ID }) {
   useEffect(() => {
     fetchBoard(ID);
   }, [ID]);
+
+  // Conexão com o websocket
+  useEffect(() => {
+    if (ID) {
+      getMembers(ID).then((res) => {
+        const members = res.data.data;
+        if (members.length) {
+          socket.connect();
+          socket.emit("joinBoard", { boardID: ID });
+        }
+      });
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [ID]);
+
+  useEffect(() => {
+    if (boardData.length) {
+      socket.on("taskMoved", (data) => {
+        const { task, listId } = data;
+        patchMoveTask(task, listId);
+      });
+    }
+  }, [boardData]);
 
   function handleDragStart(event) {
     const taskId = event.active.id;
@@ -39,6 +67,9 @@ export default function BoardTab({ ID }) {
     const listId = over.id;
     const task = getTask(taskId);
     if (task && task.listid !== listId) {
+      if (socket.connected) {
+        socket.emit("taskMove", { task, listId });
+      }
       moveTaskToList(task, listId);
     }
     setActiveDragTask(null);
@@ -116,7 +147,6 @@ export default function BoardTab({ ID }) {
             overflowY: "hidden",
             flexGrow: 1,
             flex: 1,
-
           }}
         >
           <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -135,10 +165,7 @@ export default function BoardTab({ ID }) {
         </div>
       )}
 
-      <CreateList
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-      />
+      <CreateList isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>
   );
 }

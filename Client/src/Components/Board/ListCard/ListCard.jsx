@@ -6,6 +6,7 @@ import DeleteTaskButton from "./DeleteTaskButton";
 import { useDraggable } from "@dnd-kit/core";
 import { useBoardData } from "../../../Context/boardContext";
 import { MenuOutlined } from "@ant-design/icons";
+import socket from "../../../Services/websocket";
 
 const { Paragraph } = Typography;
 
@@ -15,6 +16,16 @@ export default function ListCard({ task }) {
     useDraggable({
       id: task.id,
     });
+
+  useEffect(() => {
+    if (socket.connected) {
+      socket.on("taskUpdated", (data) => {
+        console.log("Dando patch na task editada");
+        const { task, taskData, field, value } = data;
+        patchTask(task, taskData, field, value);
+      });
+    }
+  }, []);
 
   const style = transform
     ? {
@@ -53,6 +64,10 @@ export default function ListCard({ task }) {
 
   const handleEdit = (field, value) => {
     if (taskData[field] != value) {
+      if (socket.connected) {
+        console.log("editando a task")
+        socket.emit("taskEdited", { task, taskData, field, value });
+      }
       updateTask({ ...taskData, [field]: value });
       patchTask(task, taskData, field, value);
     }

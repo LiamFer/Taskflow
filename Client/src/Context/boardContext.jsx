@@ -33,7 +33,6 @@ export const BoardProvider = ({ children }) => {
           };
         })
       ).then((listsWithTasks) => {
-        console.log(listsWithTasks);
         setBoardData(listsWithTasks);
       });
     });
@@ -117,6 +116,29 @@ export const BoardProvider = ({ children }) => {
     moveTask(task.id, { listId: targetListId });
   }
 
+  function patchMoveTask(task, targetListId) {
+    console.log(boardData);
+
+    const updatedLists = boardData.map((list) => {
+      if (list.id === task.listid) {
+        // Remove a Task da lista antiga
+        return {
+          ...list,
+          tasks: list.tasks.filter((t) => t.id !== task.id),
+        };
+      } else if (list.id === targetListId) {
+        // Adicionando a Task na Lista Nova
+        return {
+          ...list,
+          tasks: [...list.tasks, { ...task, listid: targetListId }],
+        };
+      }
+      return list;
+    });
+    console.log(updatedLists);
+    setBoardData(updatedLists);
+  }
+
   function patchTask(task, taskData, field, value) {
     setBoardData((prev) =>
       prev.map((list) => {
@@ -191,6 +213,7 @@ export const BoardProvider = ({ children }) => {
         removeBoard,
         updateList,
         getBoardMembers,
+        patchMoveTask,
       }}
     >
       {children}

@@ -8,6 +8,7 @@ import CreateTask from "../../Popups/CreateTask";
 import { useDroppable } from "@dnd-kit/core";
 import { useBoardData } from "../../../Context/boardContext";
 import { editTask } from "../../../Services/boardService";
+import socket from "../../../Services/websocket";
 const { Paragraph } = Typography;
 
 export default function BoardList({ list }) {
@@ -15,7 +16,7 @@ export default function BoardList({ list }) {
   const [tasks, setTasks] = useState(list.tasks);
   const { token } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { updateList, fetchBoard,boardID } = useBoardData();
+  const { updateList, fetchBoard, boardID } = useBoardData();
   const [isListComplete, setIsListComplete] = useState(false);
 
   useEffect(() => {
