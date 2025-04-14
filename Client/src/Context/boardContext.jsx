@@ -10,6 +10,7 @@ import {
   getTasks,
   moveTask,
 } from "../Services/boardService";
+import socket from "../Services/websocket";
 
 export const boardContext = createContext();
 
@@ -18,6 +19,28 @@ export const BoardProvider = ({ children }) => {
   const [userBoards, setUserBoards] = useState([]);
   const [boardMembers, setBoardMembers] = useState([]);
   const [boardID, setboardID] = useState();
+
+  socket.on("taskMoved", (data) => {
+    console.log(boardData);
+    const { task, listId } = data;
+    patchMoveTask(task, listId);
+  });
+
+  socket.on("taskDeleted", (data) => {
+    const { task } = data;
+    removeTask(task);
+  });
+
+  socket.on("taskCreated", (data) => {
+    console.log(data);
+    addTask(data);
+  });
+
+  socket.on("taskUpdated", (data) => {
+    console.log("Dando patch na task editada");
+    const { task, taskData, field, value } = data;
+    patchTask(task, taskData, field, value);
+  });
 
   function fetchBoard(id) {
     getLists(id).then((response) => {
@@ -162,8 +185,10 @@ export const BoardProvider = ({ children }) => {
       title,
       description,
       completed,
-      listid: data.list.id,
+      listid: +data.list.id,
     };
+    console.log(newTask);
+    console.log(boardData);
     setBoardData(
       boardData.map((list) => {
         if (list.id == newTask.listid) {

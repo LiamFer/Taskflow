@@ -17,16 +17,6 @@ export default function ListCard({ task }) {
       id: task.id,
     });
 
-  useEffect(() => {
-    if (socket.connected) {
-      socket.on("taskUpdated", (data) => {
-        console.log("Dando patch na task editada");
-        const { task, taskData, field, value } = data;
-        patchTask(task, taskData, field, value);
-      });
-    }
-  }, []);
-
   const style = transform
     ? {
         transform: `translate(${transform.x}px, ${transform.y}px)`,

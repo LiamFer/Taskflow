@@ -16,10 +16,10 @@ export default function CreateTask({ isModalOpen, setIsModalOpen, listID }) {
         createTask(listID, values)
           .then((response) => {
             notify("success", "Done", "Task created successfully!");
+            addTask(response.data.data);
             if (socket.connected) {
               socket.emit("taskCreate", response.data.data);
             }
-            addTask(response.data.data);
             form.resetFields();
             setIsModalOpen(false);
           })

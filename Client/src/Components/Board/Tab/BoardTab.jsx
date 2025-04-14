@@ -22,9 +22,6 @@ export default function BoardTab({ ID }) {
     fetchBoard,
     moveTaskToList,
     getTask,
-    patchMoveTask,
-    removeTask,
-    addTask,
   } = useBoardData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
@@ -49,25 +46,6 @@ export default function BoardTab({ ID }) {
       };
     }
   }, [ID]);
-
-  useEffect(() => {
-    if (boardData.length) {
-      socket.on("taskMoved", (data) => {
-        const { task, listId } = data;
-        patchMoveTask(task, listId);
-      });
-
-      socket.on("taskDeleted", (data) => {
-        const { task } = data;
-        removeTask(task);
-      });
-
-      socket.on("taskCreated", (data) => {
-        console.log(data)
-        addTask(data);
-      });
-    }
-  }, [boardData]);
 
   function handleDragStart(event) {
     const taskId = event.active.id;
