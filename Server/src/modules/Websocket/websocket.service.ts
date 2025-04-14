@@ -54,4 +54,23 @@ export class WebsocketService
       client.to(boardRoom).emit('taskMoved', payload);
     }
   }
+
+  @SubscribeMessage('taskCreate')
+  handleTaskCreate(client: Socket, payload: any) {
+    console.log(payload)
+    const rooms = Array.from(client.rooms);
+    const boardRoom = rooms.find((room) => room !== client.id);
+    if (boardRoom) {
+      client.to(boardRoom).emit('taskCreated', payload);
+    }
+  }
+
+  @SubscribeMessage('taskDelete')
+  handleTaskDelete(client: Socket, payload: any) {
+    const rooms = Array.from(client.rooms);
+    const boardRoom = rooms.find((room) => room !== client.id);
+    if (boardRoom) {
+      client.to(boardRoom).emit('taskDeleted', payload);
+    }
+  }
 }

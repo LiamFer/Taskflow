@@ -2,6 +2,7 @@ import { Form, Input, Modal } from "antd";
 import { createTask } from "../../Services/boardService";
 import useNotify from "../../Context/notificationContext";
 import { useBoardData } from "../../Context/boardContext";
+import socket from "../../Services/websocket";
 
 export default function CreateTask({ isModalOpen, setIsModalOpen, listID }) {
   const [form] = Form.useForm();
@@ -15,6 +16,9 @@ export default function CreateTask({ isModalOpen, setIsModalOpen, listID }) {
         createTask(listID, values)
           .then((response) => {
             notify("success", "Done", "Task created successfully!");
+            if (socket.connected) {
+              socket.emit("taskCreate", response.data.data);
+            }
             addTask(response.data.data);
             form.resetFields();
             setIsModalOpen(false);

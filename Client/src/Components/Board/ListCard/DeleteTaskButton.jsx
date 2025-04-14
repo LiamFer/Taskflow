@@ -3,6 +3,7 @@ import { Button, Popconfirm } from "antd";
 import useNotify from "../../../Context/notificationContext";
 import { deleteTask } from "../../../Services/boardService";
 import { useBoardData } from "../../../Context/boardContext";
+import socket from "../../../Services/websocket";
 
 export default function DeleteTaskButton({ task }) {
   const { notify } = useNotify();
@@ -12,6 +13,9 @@ export default function DeleteTaskButton({ task }) {
     deleteTask(task.id)
       .then((response) => {
         notify("success", "All done!", "Everything went smoothly.");
+        if (socket.connected) {
+          socket.emit("taskDelete", { task });
+        }
         removeTask(task);
       })
       .catch((err) => {

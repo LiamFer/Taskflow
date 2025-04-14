@@ -65,7 +65,6 @@ export default function ListCard({ task }) {
   const handleEdit = (field, value) => {
     if (taskData[field] != value) {
       if (socket.connected) {
-        console.log("editando a task")
         socket.emit("taskEdited", { task, taskData, field, value });
       }
       updateTask({ ...taskData, [field]: value });

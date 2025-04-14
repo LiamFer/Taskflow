@@ -17,8 +17,15 @@ import socket from "../../../Services/websocket";
 import { getMembers } from "../../../Services/boardService";
 
 export default function BoardTab({ ID }) {
-  const { boardData, fetchBoard, moveTaskToList, getTask, patchMoveTask } =
-    useBoardData();
+  const {
+    boardData,
+    fetchBoard,
+    moveTaskToList,
+    getTask,
+    patchMoveTask,
+    removeTask,
+    addTask,
+  } = useBoardData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [activeDragTask, setActiveDragTask] = useState(null);
@@ -48,6 +55,16 @@ export default function BoardTab({ ID }) {
       socket.on("taskMoved", (data) => {
         const { task, listId } = data;
         patchMoveTask(task, listId);
+      });
+
+      socket.on("taskDeleted", (data) => {
+        const { task } = data;
+        removeTask(task);
+      });
+
+      socket.on("taskCreated", (data) => {
+        console.log(data)
+        addTask(data);
       });
     }
   }, [boardData]);
