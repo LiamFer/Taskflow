@@ -73,4 +73,13 @@ export class WebsocketService
       client.to(boardRoom).emit('taskDeleted', payload);
     }
   }
+
+  @SubscribeMessage('listUpdate')
+  handleListUpdate(client: Socket) {
+    const rooms = Array.from(client.rooms);
+    const boardRoom = rooms.find((room) => room !== client.id);
+    if (boardRoom) {
+      client.to(boardRoom).emit('listUpdated');
+    }
+  }
 }

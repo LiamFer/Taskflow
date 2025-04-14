@@ -21,7 +21,6 @@ export const BoardProvider = ({ children }) => {
   const [boardID, setboardID] = useState();
 
   socket.on("taskMoved", (data) => {
-    console.log(boardData);
     const { task, listId } = data;
     patchMoveTask(task, listId);
   });
@@ -32,14 +31,16 @@ export const BoardProvider = ({ children }) => {
   });
 
   socket.on("taskCreated", (data) => {
-    console.log(data);
     addTask(data);
   });
 
   socket.on("taskUpdated", (data) => {
-    console.log("Dando patch na task editada");
     const { task, taskData, field, value } = data;
     patchTask(task, taskData, field, value);
+  });
+
+  socket.on("listUpdated", () => {
+    fetchBoard(boardID);
   });
 
   function fetchBoard(id) {
@@ -140,8 +141,6 @@ export const BoardProvider = ({ children }) => {
   }
 
   function patchMoveTask(task, targetListId) {
-    console.log(boardData);
-
     const updatedLists = boardData.map((list) => {
       if (list.id === task.listid) {
         // Remove a Task da lista antiga
@@ -158,7 +157,6 @@ export const BoardProvider = ({ children }) => {
       }
       return list;
     });
-    console.log(updatedLists);
     setBoardData(updatedLists);
   }
 
@@ -187,8 +185,6 @@ export const BoardProvider = ({ children }) => {
       completed,
       listid: +data.list.id,
     };
-    console.log(newTask);
-    console.log(boardData);
     setBoardData(
       boardData.map((list) => {
         if (list.id == newTask.listid) {

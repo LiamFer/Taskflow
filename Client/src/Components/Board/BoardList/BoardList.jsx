@@ -29,16 +29,17 @@ export default function BoardList({ list }) {
     setIsListComplete(allComplete);
   }, [tasks]);
 
-  function completeTasks() {
-    setTasks(
-      list.tasks.map((task) => {
-        const editedTask = { ...task, completed: !isListComplete };
-        console.log(editedTask);
-        editTask(task.id, editedTask);
-        return editedTask;
-      })
-    );
-    setIsListComplete((prev) => !prev);
+  async function completeTasks() {
+    const updatedTasks = list.tasks.map((task) => ({
+      ...task,
+      completed: !isListComplete,
+    }));
+    await Promise.all(updatedTasks.map((task) => editTask(task.id, task)));
+    setTasks(updatedTasks);
+    setIsListComplete(!isListComplete);
+    if (socket.connected) {
+      socket.emit("listUpdate");
+    }
     fetchBoard(boardID);
   }
 
