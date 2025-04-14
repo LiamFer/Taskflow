@@ -82,4 +82,13 @@ export class WebsocketService
       client.to(boardRoom).emit('listUpdated');
     }
   }
+
+  @SubscribeMessage('listDelete')
+  handleListDelete(client: Socket, payload: any) {
+    const rooms = Array.from(client.rooms);
+    const boardRoom = rooms.find((room) => room !== client.id);
+    if (boardRoom) {
+      client.to(boardRoom).emit('listDeleted',payload);
+    }
+  }
 }

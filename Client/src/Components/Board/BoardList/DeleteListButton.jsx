@@ -3,16 +3,20 @@ import { Button, Popconfirm } from "antd";
 import useNotify from "../../../Context/notificationContext";
 import { deleteList } from "../../../Services/boardService";
 import { useBoardData } from "../../../Context/boardContext";
+import socket from "../../../Services/websocket";
 
 export default function DeleteListButton({ listID }) {
   const { notify } = useNotify();
-  const {setBoardData} = useBoardData()
+  const { setBoardData } = useBoardData();
 
   const handleDelete = () => {
     deleteList(listID)
       .then((response) => {
         setBoardData((prev) => prev.filter((list) => list.id != listID));
         notify("success", "All done!", "Everything went smoothly.");
+        if (socket.connected) {
+          socket.emit("listDelete",{listID});
+        }
       })
       .catch((err) => {
         notify(

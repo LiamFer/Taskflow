@@ -43,6 +43,11 @@ export const BoardProvider = ({ children }) => {
     fetchBoard(boardID);
   });
 
+  socket.on("listDeleted", (data) => {
+    const { listID } = data;
+    setBoardData((prev) => prev.filter((list) => list.id != listID));
+  });
+
   function fetchBoard(id) {
     getLists(id).then((response) => {
       const lists = response.data.data;
