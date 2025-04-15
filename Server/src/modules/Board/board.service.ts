@@ -124,11 +124,20 @@ export class BoardService {
   }
 
   async getMembers(id: number): Promise<Board[]> {
-    return this.boardRepository
-    .createQueryBuilder('board')
-    .innerJoin('board.members', 'member')
-    .where('board.id = :id', { id })
-    .select(['member.name', 'member.email'])
-    .getRawMany();
+    const owner = await this.boardRepository
+      .createQueryBuilder('board')
+      .innerJoin('board.owner', 'user')
+      .where('board.id = :id', { id })
+      .select(['user.name AS name', 'user.email AS email', `'Owner' AS role`])
+      .getRawMany();
+
+    const members =  await this.boardRepository
+      .createQueryBuilder('board')
+      .innerJoin('board.members', 'member')
+      .where('board.id = :id', { id })
+      .select(['member.name AS name', 'member.email AS email',`'Member' AS role`])
+      .getRawMany();
+
+    return [...owner,...members];
   }
 }

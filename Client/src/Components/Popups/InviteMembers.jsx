@@ -6,6 +6,7 @@ import {
   Spin,
   Button,
   Popconfirm,
+  Badge,
 } from "antd";
 import useNotify from "../../Context/notificationContext";
 import stringToColor from "../../utils/stringToColor";
@@ -16,7 +17,7 @@ import {
   searchUsers,
 } from "../../Services/boardService";
 import { useState } from "react";
-import { DeleteOutlined } from "@ant-design/icons";
+import { CrownFilled, DeleteOutlined } from "@ant-design/icons";
 import { useBoardData } from "../../Context/boardContext";
 
 export default function InviteMembers({ open, setOpen }) {
@@ -58,9 +59,7 @@ export default function InviteMembers({ open, setOpen }) {
               </div>
             </div>
           ),
-          disabled: boardMembers.find(
-            (member) => member.member_email == user.email
-          )
+          disabled: boardMembers.find((member) => member.email == user.email)
             ? true
             : false,
         }))
@@ -119,40 +118,52 @@ export default function InviteMembers({ open, setOpen }) {
         dataSource={boardMembers}
         renderItem={(item, index) => (
           <List.Item
+            style={{
+              opacity: item.role == "Owner" ? 0.5 : 1,
+              pointerEvents: item.role == "Owner" ? "none" : "auto",
+              cursor: item.role == "Owner" ? "not-allowed" : "default",
+            }}
             actions={[
-              <Popconfirm
-                title="Remove this member"
-                description="Are you sure you want to remove this Member?"
-                onConfirm={() => handleRemove(item.member_email)}
-                onCancel={() => {}}
-                okText="Yes"
-                cancelText="No"
-                placement="bottom"
-              >
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  iconPosition="end"
+              item.role == "Member" && (
+                <Popconfirm
+                  title="Remove this member"
+                  description="Are you sure you want to remove this Member?"
+                  onConfirm={() => handleRemove(item.email)}
+                  okText="Yes"
+                  cancelText="No"
+                  placement="bottom"
                 >
-                  Remove
-                </Button>
-                ,
-              </Popconfirm>,
-            ]}
+                  <Button
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    iconPosition="end"
+                  >
+                    Remove
+                  </Button>
+                </Popconfirm>
+              ),
+            ]} 
           >
             <List.Item.Meta
               avatar={
-                <Avatar
+                <Badge
                   style={{
-                    backgroundColor: stringToColor(item.member_name),
-                    color: "white",
+                    display: item.role === "Owner" ? undefined : "none",
                   }}
+                  count={<CrownFilled style={{ color: "orange" }} />}
                 >
-                  {item.member_name.substring(0, 4)}
-                </Avatar>
+                  <Avatar
+                    style={{
+                      backgroundColor: stringToColor(item.name),
+                      color: "white",
+                    }}
+                  >
+                    {item.name.substring(0, 4)}
+                  </Avatar>
+                </Badge>
               }
-              title={item.member_name}
-              description={item.member_email}
+              title={item.name}
+              description={item.email}
             />
           </List.Item>
         )}

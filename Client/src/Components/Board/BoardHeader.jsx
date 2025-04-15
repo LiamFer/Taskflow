@@ -1,5 +1,5 @@
-import { UserAddOutlined } from "@ant-design/icons";
-import { Button, Avatar, Tooltip, Typography } from "antd";
+import { CrownFilled, CrownOutlined, UserAddOutlined } from "@ant-design/icons";
+import { Button, Avatar, Tooltip, Typography, Badge } from "antd";
 import stringToColor from "../../utils/stringToColor";
 import useNotify from "../../Context/notificationContext";
 import { useBoardData } from "../../Context/boardContext";
@@ -98,16 +98,21 @@ export default function BoardHeader({ boardInfo }) {
           }}
         >
           {boardMembers.map((member) => (
-            <Tooltip title={member.member_name} placement="top">
-              <Avatar
-                style={{
-                  backgroundColor: stringToColor(member.member_name),
-                  borderColor: "lightgreen",
-                  borderWidth: "2px",
-                }}
+            <Tooltip title={member.role == "Owner" ? `Owner: ${member.name}` : member.name} placement="top">
+              <Badge
+                style={{ display: member.role == "Owner" ? null : "none" }}
+                count={<CrownFilled style={{ color: "orange" }} />}
               >
-                {member.member_name.substring(0, 4)}
-              </Avatar>
+                <Avatar
+                  style={{
+                    backgroundColor: stringToColor(member.name),
+                    // borderColor: "lightgreen",
+                    // borderWidth: "2px",
+                  }}
+                >
+                  {member.name.substring(0, 4)}
+                </Avatar>
+              </Badge>
             </Tooltip>
           ))}
         </Avatar.Group>
