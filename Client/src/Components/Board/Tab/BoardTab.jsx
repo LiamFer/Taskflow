@@ -6,17 +6,19 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { Button, Tabs } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import CreateList from "../../Popups/CreateList";
 import { useBoardData } from "../../../Context/boardContext";
 import socket from "../../../Services/websocket";
 import { getMembers } from "../../../Services/boardService";
 import Kanban from "../Kanban/Kanban";
 import Table from "../Table/Table";
+import { userContext } from "../../../Context/userContext";
 
 export default function BoardTab({ ID }) {
   const { fetchBoard } = useBoardData();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {user} = useContext(userContext)
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
@@ -28,9 +30,9 @@ export default function BoardTab({ ID }) {
     if (ID) {
       getMembers(ID).then((res) => {
         const members = res.data.data;
-        if (members.length) {
+        if (members.filter((m) => m.email != user.email).length) {
           socket.connect();
-          socket.emit("joinBoard", { boardID: ID });
+          socket.emit("joinBoard", { boardID: ID});
         }
       });
       return () => {

@@ -17,8 +17,15 @@ export const boardContext = createContext();
 export const BoardProvider = ({ children }) => {
   const [boardData, setBoardData] = useState([]);
   const [userBoards, setUserBoards] = useState([]);
+  const [boardOwner, setBoardOwner] = useState(null);
   const [boardMembers, setBoardMembers] = useState([]);
   const [boardID, setboardID] = useState();
+  const [connectedUsers, setConnectedUsers] = useState([]);
+
+  socket.on("memberConnected", (data) => {
+    setConnectedUsers((prev) => data);
+    console.log(data);
+  });
 
   socket.on("taskMoved", (data) => {
     const { task, listId } = data;
@@ -218,6 +225,7 @@ export const BoardProvider = ({ children }) => {
   function getBoardMembers() {
     return getMembers(boardID).then((res) => {
       setBoardMembers(res.data.data);
+      setBoardOwner(res.data.data.find((user) => user.role == "Owner"));
     });
   }
 
@@ -228,6 +236,8 @@ export const BoardProvider = ({ children }) => {
         userBoards,
         boardMembers,
         boardID,
+        boardOwner,
+        connectedUsers,
         fetchUserBoards,
         setBoardData,
         fetchBoard,

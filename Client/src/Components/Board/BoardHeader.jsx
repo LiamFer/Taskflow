@@ -5,12 +5,20 @@ import useNotify from "../../Context/notificationContext";
 import { useBoardData } from "../../Context/boardContext";
 import DeleteBoard from "./DeleteBoard";
 import InviteMembers from "../Popups/InviteMembers";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { userContext } from "../../Context/userContext";
 
 export default function BoardHeader({ boardInfo }) {
   const [open, setOpen] = useState(false);
   const { notify } = useNotify();
-  const { updateBoardInfo, boardMembers, getBoardMembers } = useBoardData();
+  const {
+    updateBoardInfo,
+    boardMembers,
+    getBoardMembers,
+    boardOwner,
+    connectedUsers,
+  } = useBoardData();
+  const { user } = useContext(userContext);
 
   useEffect(() => {
     getBoardMembers();
@@ -98,7 +106,12 @@ export default function BoardHeader({ boardInfo }) {
           }}
         >
           {boardMembers.map((member) => (
-            <Tooltip title={member.role == "Owner" ? `Owner: ${member.name}` : member.name} placement="top">
+            <Tooltip
+              title={
+                member.role == "Owner" ? `Owner: ${member.name}` : member.name
+              }
+              placement="top"
+            >
               <Badge
                 style={{ display: member.role == "Owner" ? null : "none" }}
                 count={<CrownFilled style={{ color: "orange" }} />}
@@ -106,8 +119,16 @@ export default function BoardHeader({ boardInfo }) {
                 <Avatar
                   style={{
                     backgroundColor: stringToColor(member.name),
-                    // borderColor: "lightgreen",
-                    // borderWidth: "2px",
+                    borderColor:
+                      member.email != user.email &&
+                      connectedUsers.find((email) => email == member.email)
+                        ? "#00ff80cc"
+                        : undefined,
+                    borderWidth:
+                      member.email != user.email &&
+                      connectedUsers.find((email) => email == member.email)
+                        ? "3px"
+                        : undefined,
                   }}
                 >
                   {member.name.substring(0, 4)}
@@ -120,7 +141,9 @@ export default function BoardHeader({ boardInfo }) {
         <Button icon={<UserAddOutlined />} onClick={() => setOpen(true)}>
           Invite
         </Button>
-        <DeleteBoard boardInfo={boardInfo} />
+        {user.email == boardOwner?.email && (
+          <DeleteBoard boardInfo={boardInfo} />
+        )}
         <InviteMembers open={open} setOpen={setOpen} />
       </div>
     </div>

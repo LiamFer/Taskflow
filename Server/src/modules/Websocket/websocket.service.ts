@@ -18,48 +18,49 @@ export class WebsocketService
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: Socket) {
-    console.log(`Cliente conectado: ${client.id}`);
+  async getBoardConnectedUsers(client: Socket) {
+    const sockets = await this.server.in(client.data.boardID).fetchSockets();
+    const emails = sockets.map((socket) => socket.data.email);
+    return emails
   }
 
-  handleDisconnect(client: Socket) {
-    console.log(`Cliente desconectado: ${client.id}`);
+  handleConnection(client: Socket) {
+    const email = client.handshake.auth.email;
+    client.data.email = email;
+  }
+
+  async handleDisconnect(client: Socket) {
+    const emails = await this.getBoardConnectedUsers(client)
+    this.server.to(client.data.boardID).emit('memberConnected', emails);
   }
 
   @SubscribeMessage('joinBoard')
-  joinBoard(client: Socket, payload: { boardID: string }) {
+  async joinBoard(client: Socket, payload: { boardID: string }) {
+    client.data.boardID = payload.boardID;
     client.join(payload.boardID);
-    console.log('Usuário entrou no Board ', payload.boardID);
-    client.broadcast.emit('tarefaCriada', payload);
+    const emails = await this.getBoardConnectedUsers(client)
+    this.server.to(payload.boardID).emit('memberConnected', emails);
   }
 
   @SubscribeMessage('taskEdited')
   handleTaskEdit(client: Socket, payload: any) {
-    const rooms = Array.from(client.rooms);
-    const boardRoom = rooms.find((room) => room !== client.id);
-    console.log(boardRoom);
+    const boardRoom = client.data.boardID;
     if (boardRoom) {
-      console.log('Task eidtada');
       client.to(boardRoom).emit('taskUpdated', payload);
     }
   }
 
   @SubscribeMessage('taskMove')
   handleTaskMove(client: Socket, payload: any) {
-    console.log(payload);
-    const rooms = Array.from(client.rooms);
-    const boardRoom = rooms.find((room) => room !== client.id);
+    const boardRoom = client.data.boardID;
     if (boardRoom) {
-      console.log('Task Movida');
       client.to(boardRoom).emit('taskMoved', payload);
     }
   }
 
   @SubscribeMessage('taskCreate')
   handleTaskCreate(client: Socket, payload: any) {
-    console.log(payload)
-    const rooms = Array.from(client.rooms);
-    const boardRoom = rooms.find((room) => room !== client.id);
+    const boardRoom = client.data.boardID;
     if (boardRoom) {
       client.to(boardRoom).emit('taskCreated', payload);
     }
@@ -67,8 +68,7 @@ export class WebsocketService
 
   @SubscribeMessage('taskDelete')
   handleTaskDelete(client: Socket, payload: any) {
-    const rooms = Array.from(client.rooms);
-    const boardRoom = rooms.find((room) => room !== client.id);
+    const boardRoom = client.data.boardID;
     if (boardRoom) {
       client.to(boardRoom).emit('taskDeleted', payload);
     }
@@ -76,8 +76,7 @@ export class WebsocketService
 
   @SubscribeMessage('listUpdate')
   handleListUpdate(client: Socket) {
-    const rooms = Array.from(client.rooms);
-    const boardRoom = rooms.find((room) => room !== client.id);
+    const boardRoom = client.data.boardID;
     if (boardRoom) {
       client.to(boardRoom).emit('listUpdated');
     }
@@ -85,8 +84,7 @@ export class WebsocketService
 
   @SubscribeMessage('listCreate')
   handleListCreate(client: Socket) {
-    const rooms = Array.from(client.rooms);
-    const boardRoom = rooms.find((room) => room !== client.id);
+    const boardRoom = client.data.boardID;
     if (boardRoom) {
       client.to(boardRoom).emit('listCreated');
     }
@@ -94,10 +92,9 @@ export class WebsocketService
 
   @SubscribeMessage('listDelete')
   handleListDelete(client: Socket, payload: any) {
-    const rooms = Array.from(client.rooms);
-    const boardRoom = rooms.find((room) => room !== client.id);
+    const boardRoom = client.data.boardID;
     if (boardRoom) {
-      client.to(boardRoom).emit('listDeleted',payload);
+      client.to(boardRoom).emit('listDeleted', payload);
     }
   }
 }
