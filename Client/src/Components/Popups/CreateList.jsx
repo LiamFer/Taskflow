@@ -2,14 +2,12 @@ import { Form, Input, Modal } from "antd";
 import { createList } from "../../Services/boardService";
 import useNotify from "../../Context/notificationContext";
 import { useBoardData } from "../../Context/boardContext";
+import socket from "../../Services/websocket";
 
-export default function CreateList({
-  isModalOpen,
-  setIsModalOpen,
-}) {
+export default function CreateList({ isModalOpen, setIsModalOpen }) {
   const [form] = Form.useForm();
   const { notify } = useNotify();
-  const { fetchBoard,boardID } = useBoardData();
+  const { fetchBoard, boardID } = useBoardData();
 
   const handleOk = () => {
     form
@@ -21,6 +19,9 @@ export default function CreateList({
             form.resetFields();
             setIsModalOpen(false);
             fetchBoard(boardID);
+            if (socket.connected) {
+              socket.emit("listCreate");
+            }
           })
           .catch(() => {
             notify("error", "Error", "Failed to create the list.");

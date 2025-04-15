@@ -83,6 +83,15 @@ export class WebsocketService
     }
   }
 
+  @SubscribeMessage('listCreate')
+  handleListCreate(client: Socket) {
+    const rooms = Array.from(client.rooms);
+    const boardRoom = rooms.find((room) => room !== client.id);
+    if (boardRoom) {
+      client.to(boardRoom).emit('listCreated');
+    }
+  }
+
   @SubscribeMessage('listDelete')
   handleListDelete(client: Socket, payload: any) {
     const rooms = Array.from(client.rooms);

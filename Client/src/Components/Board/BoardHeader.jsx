@@ -1,8 +1,4 @@
-import {
-  UserAddOutlined,
-  UserOutlined,
-  AntDesignOutlined,
-} from "@ant-design/icons";
+import { UserAddOutlined } from "@ant-design/icons";
 import { Button, Avatar, Tooltip, Typography } from "antd";
 import stringToColor from "../../utils/stringToColor";
 import useNotify from "../../Context/notificationContext";
@@ -104,7 +100,11 @@ export default function BoardHeader({ boardInfo }) {
           {boardMembers.map((member) => (
             <Tooltip title={member.member_name} placement="top">
               <Avatar
-                style={{ backgroundColor: stringToColor(member.member_name) }}
+                style={{
+                  backgroundColor: stringToColor(member.member_name),
+                  borderColor: "lightgreen",
+                  borderWidth: "2px",
+                }}
               >
                 {member.member_name.substring(0, 4)}
               </Avatar>
