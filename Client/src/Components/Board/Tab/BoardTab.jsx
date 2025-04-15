@@ -7,25 +7,17 @@ import {
 } from "@ant-design/icons";
 import { Button, Tabs } from "antd";
 import { useEffect, useState } from "react";
-import BoardList from "../BoardList/BoardList";
 import CreateList from "../../Popups/CreateList";
-import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { useBoardData } from "../../../Context/boardContext";
-import ListCard from "../ListCard/ListCard";
-import styles from "./boardtab.module.css";
 import socket from "../../../Services/websocket";
 import { getMembers } from "../../../Services/boardService";
+import Kanban from "../Kanban/Kanban";
+import Table from "../Table/Table";
 
 export default function BoardTab({ ID }) {
-  const {
-    boardData,
-    fetchBoard,
-    moveTaskToList,
-    getTask,
-  } = useBoardData();
+  const { fetchBoard } = useBoardData();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("1");
-  const [activeDragTask, setActiveDragTask] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     fetchBoard(ID);
@@ -47,28 +39,6 @@ export default function BoardTab({ ID }) {
     }
   }, [ID]);
 
-  function handleDragStart(event) {
-    const taskId = event.active.id;
-    const task = getTask(taskId);
-    if (task) {
-      setActiveDragTask(task);
-    }
-  }
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-    if (!over) return;
-    const taskId = active.id;
-    const listId = over.id;
-    const task = getTask(taskId);
-    if (task && task.listid !== listId) {
-      if (socket.connected) {
-        socket.emit("taskMove", { task, listId });
-      }
-      moveTaskToList(task, listId);
-    }
-    setActiveDragTask(null);
-  }
 
   const items = [
     {
@@ -77,7 +47,7 @@ export default function BoardTab({ ID }) {
           <AppstoreOutlined /> Kanban
         </span>
       ),
-      key: "1",
+      key: 0,
     },
     {
       label: (
@@ -85,8 +55,7 @@ export default function BoardTab({ ID }) {
           <TableOutlined /> Table
         </span>
       ),
-      key: "2",
-      disabled: true,
+      key: 1,
     },
     {
       label: (
@@ -94,7 +63,7 @@ export default function BoardTab({ ID }) {
           <UnorderedListOutlined /> List
         </span>
       ),
-      key: "3",
+      key: 2,
       disabled: true,
     },
     {
@@ -103,10 +72,11 @@ export default function BoardTab({ ID }) {
           <ClockCircleOutlined /> Timeline
         </span>
       ),
-      key: "4",
+      key: 3,
       disabled: true,
     },
   ];
+  const views = [<Kanban />,<Table/>]
 
   return (
     <div
@@ -132,33 +102,9 @@ export default function BoardTab({ ID }) {
         }
       />
 
-      {activeTab === "1" && (
-        <div
-          className={styles.scrollArea}
-          style={{
-            display: "flex",
-            gap: 20,
-            overflowX: "auto",
-            overflowY: "hidden",
-            flexGrow: 1,
-            flex: 1,
-          }}
-        >
-          <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            {boardData.map((list) => (
-              <BoardList key={list.id} list={list} />
-            ))}
+      {views[activeTab]}
 
-            <DragOverlay>
-              {activeDragTask ? (
-                <div style={{ width: 250 }}>
-                  <ListCard task={activeDragTask} isOverlay />
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
-        </div>
-      )}
+    
 
       <CreateList isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>
