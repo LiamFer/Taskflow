@@ -12,7 +12,7 @@ import { useBoardData } from "../../../Context/boardContext";
 import socket from "../../../Services/websocket";
 import { getMembers } from "../../../Services/boardService";
 import Kanban from "../Kanban/Kanban";
-import Table from "../Table/Table";
+import TasksTable from "../Table/Table";
 import { userContext } from "../../../Context/userContext";
 
 export default function BoardTab({ ID }) {
@@ -78,7 +78,7 @@ export default function BoardTab({ ID }) {
       disabled: true,
     },
   ];
-  const views = [<Kanban />,<Table/>]
+  const views = [<Kanban />,<TasksTable/>]
 
   return (
     <div
