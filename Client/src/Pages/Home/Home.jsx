@@ -1,5 +1,5 @@
 import { Layout, theme, FloatButton } from "antd";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useTransition } from "react";
 import { Outlet } from "react-router-dom";
 import { userContext } from "../../Context/userContext";
 import SiderMenu from "../../Components/AppLayout/siderMenu";
@@ -14,6 +14,7 @@ import { themeContext } from "../../Context/themeContext";
 import { NotificationProvider } from "../../Context/notificationContext";
 import { BoardProvider } from "../../Context/boardContext";
 import CreateBoard from "../../Components/Popups/CreateBoard";
+import socket from "../../Services/websocket";
 
 const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -24,6 +25,10 @@ const Home = () => {
 
   const { token } = theme.useToken();
   const { user } = useContext(userContext);
+
+  useEffect(() => {
+    socket.auth = { email: user.email };
+  }, []);
 
   return (
     <NotificationProvider>
@@ -61,7 +66,6 @@ const Home = () => {
 
               <Content
                 style={{
-
                   display: "flex",
                   flexDirection: "column",
                   flex: 1,
@@ -87,11 +91,15 @@ const Home = () => {
                 tooltip="Change Theme"
                 onClick={() => setDarkMode((prev) => !prev)}
               />
-              <FloatButton tooltip="New Board" icon={<FileAddOutlined />} onClick={()=> setOpenCreateBoard(true)} />
+              <FloatButton
+                tooltip="New Board"
+                icon={<FileAddOutlined />}
+                onClick={() => setOpenCreateBoard(true)}
+              />
             </FloatButton.Group>
 
             <ConfigPanel open={open} setOpen={setOpen} />
-            <CreateBoard open={openCreateBoard} setOpen={setOpenCreateBoard}/>
+            <CreateBoard open={openCreateBoard} setOpen={setOpenCreateBoard} />
           </Layout>
         </AuthRoute>
       </BoardProvider>
