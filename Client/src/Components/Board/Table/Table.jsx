@@ -219,10 +219,7 @@ export default function TasksTable() {
     },
     {
       title: "Actions",
-      render: (_, record) => (
-        <DeleteTaskButton task={record} />
-      ),
-
+      render: (_, record) => <DeleteTaskButton task={record} />,
     },
   ];
 
@@ -249,12 +246,20 @@ export default function TasksTable() {
         flexGrow: 1,
       }}
     >
-      <Table
-        components={components}
-        style={{ flexGrow: 1, height: "100%" }}
-        columns={columns}
-        dataSource={data}
-      />
+      <div style={{ flexGrow: 1, overflowY: "auto" }}>
+        <Table
+          components={components}
+          style={{ flexGrow: 1 }}
+          columns={columns}
+          dataSource={data}
+          pagination={{
+            responsive: true,
+            position: ["top"],
+            showSizeChanger: true, // permite mudar o tamanho da página
+            pageSizeOptions: ["3","5", "8", "10", "20"],
+          }}
+        />
+      </div>
     </div>
   );
 }
