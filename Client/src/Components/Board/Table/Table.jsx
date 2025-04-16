@@ -5,6 +5,7 @@ import stringToColor from "./../../../utils/stringToColor";
 import useNotify from "../../../Context/notificationContext";
 import { editTask } from "../../../Services/boardService";
 import socket from "../../../Services/websocket";
+import DeleteTaskButton from "../ListCard/DeleteTaskButton";
 
 var __awaiter =
   (this && this.__awaiter) ||
@@ -215,6 +216,13 @@ export default function TasksTable() {
       dataIndex: "description",
       key: "description",
       editable: true,
+    },
+    {
+      title: "Actions",
+      render: (_, record) => (
+        <DeleteTaskButton task={record} />
+      ),
+
     },
   ];
 
