@@ -82,6 +82,14 @@ export class WebsocketService
     }
   }
 
+  @SubscribeMessage('listTitleUpdate')
+  handleListTitleUpdate(client: Socket,payload: any) {
+    const boardRoom = client.data.boardID;
+    if (boardRoom) {
+      client.to(boardRoom).emit('listTitleUpdated',payload);
+    }
+  }
+
   @SubscribeMessage('listCreate')
   handleListCreate(client: Socket) {
     const boardRoom = client.data.boardID;

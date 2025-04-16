@@ -27,8 +27,8 @@ const Home = () => {
   const { user } = useContext(userContext);
 
   useEffect(() => {
-    socket.auth = { email: user.email };
-  }, []);
+    socket.auth = { email: user?.email };
+  }, [user]);
 
   return (
     <NotificationProvider>

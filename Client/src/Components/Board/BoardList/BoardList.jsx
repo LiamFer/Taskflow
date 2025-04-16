@@ -88,6 +88,9 @@ export default function BoardList({ list }) {
             editable={{
               onChange: (ev) => {
                 updateList(list.id, { title: ev });
+                if (socket.connected) {
+                  socket.emit("listTitleUpdate",{id:list.id, changes:{ title: ev }});
+                }
               },
               triggerType: "text",
               autoSize: { maxRows: 1 },

@@ -59,6 +59,11 @@ export const BoardProvider = ({ children }) => {
     setBoardData((prev) => prev.filter((list) => list.id != listID));
   });
 
+  socket.on("listTitleUpdated", (data) => {
+    const { id,changes } = data;
+    updateList(id, changes)
+  });
+
   function fetchBoard(id) {
     getLists(id).then((response) => {
       const lists = response.data.data;
