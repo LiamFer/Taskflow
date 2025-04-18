@@ -1,7 +1,5 @@
 # 🧠 Taskflow
 
-![App Preview](appWorking.gif)
-
 <p align="center">
   <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" />
   <img src="https://img.shields.io/badge/TypeORM-000000?style=for-the-badge&logo=typeorm&logoColor=white" />
@@ -18,6 +16,12 @@ O sistema é dividido em dois diretórios principais:
 
 - 📦 `Server` → Backend construído com **NestJS** e **TypeORM**, com banco de dados **PostgreSQL** containerizado utilizando **Podman**.
 - 🖥 `Client` → Frontend desenvolvido com **React 19**, **Ant Design 5**, e **Vite**.
+
+---
+
+## 🎥 Overview
+![App Preview](appWorking.gif)
+
 
 ### Funcionalidades principais:
 
